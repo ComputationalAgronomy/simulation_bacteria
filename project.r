@@ -1,19 +1,4 @@
-rm(list=ls())
-m <- matrix(rep(0,121),nrow=11,ncol=11)
-m[5,5] <- 1000
-iter <- 1
-while(iter < 1000){
- for (i in 2:10){
-  for (j in 2:10){
-    if(m[i,j] > 0){
-      m <- move(m,i,j,r,s)
-      iter <- iter+1
-    }
-    }
-  }    
-}
-
-move <- function(m,i,j,r,s){
+move_8d_equal <- function(m,i,j,r,s){
   r <- sample(1:m[i,j],1)
   s <- runif(r)
   go_up <- sum(s < 0.125)
@@ -36,3 +21,33 @@ move <- function(m,i,j,r,s){
   return(m)
 }
 
+move_3d_equal_init <- function(m,i,j,r,s){
+  r <- sample(1:m[i,j],1)
+  s <- runif(r)
+  go_down <- sum(s < 1/3)
+  go_right <- sum(s >= 1/3 & s < 2/3)
+  go_dr <- sum(s >= 2/3)
+  m[i+1,j] <- m[i+1,j]+go_down
+  m[i,j+1] <- m[i,j+1]+go_right
+  m[i+1,j+1] <- m[i+1,j+1]+go_dr
+  m[i,j] <- m[i,j]-r
+  return(m)
+}
+
+m <- matrix(rep(0,121),nrow=11,ncol=11)
+m[5,5] <- 1000
+iter <- 1
+while(iter < 1000){
+  for (i in 2:10){
+    for (j in 2:10){
+      if(m[i,j] > 0 && 3 >= i && 3 >= j){
+        m <- move_3d_equal_init(m,i,j,r,s)
+        iter <- iter+1
+      }
+      else if(m[i,j] > 0){
+        m <- move_8d_equal(m,i,j,r,s)
+        iter <- iter+1
+      }
+    }
+  }    
+}
