@@ -80,7 +80,6 @@ loc_time_print.microbe <- function(m,id,t){
   return(plot(c,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
 
-
 move.microbe <- function(m){
   p <- runif(1,0,1)
     if (p < 1/2){## prop of (0,90d) = 1/2, else =  2/3
@@ -111,25 +110,68 @@ age <- function(m){
 }
 
 
-death.microbe <- function(m,id){
-  m <- m[-id] 
+death.microbe <- function(m){
+}
+
+death <- function(m){
+  UseMethod("death")
+}
+
+birth.microbe <- function(m){## problem with binding 
+    if (m$age >= 10){
+      q <- (m$age-10)/5
+      p <- runif(1,0,1)
+      
+    if(q > p){
+      n <- lapply(1, function(x){
+        new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+      })
+      m <- c(m,n)
+    }else {
+      m <- m
+    }
+    }
+  if(m$age < 10){
+    m <- m
+  }
   return(m)
 }
 
-
-birth.microbe <- function(m){
-  m$location[1] <- m$location[1] + 1
-  m$loc[2] <- m$loc[2] + 1
-  return(m) 
+birth <- function(m){
+  UseMethod("birth")
 }
-
 
 microbe_list <- lapply(1:10, function(x){
   new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })
 
 
-move(microbe_list[[1]])
-age(microbe_list[[1]])
 microbe_list <- lapply(microbe_list, age)
 microbe_list <- lapply(microbe_list, move)
+microbe_list <- lapply(microbe_list,birth)
+
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
