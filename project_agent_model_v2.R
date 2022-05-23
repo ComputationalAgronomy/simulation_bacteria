@@ -111,30 +111,28 @@ age <- function(m){
 
 
 death.microbe <- function(m){
+    q <- m$age-50
+    p <- runif(1,0,5)
+    if(q > p){
+      return("True")
+    }else{
+      return("False")
+    }
 }
 
 death <- function(m){
   UseMethod("death")
 }
 
-birth.microbe <- function(m){## problem with binding 
-    if (m$age >= 10){
-      q <- (m$age-10)/5
-      p <- runif(1,0,1)
-      
+birth.microbe <- function(m){
+    q <- m$age-10
+    p <- runif(1,0,5)
     if(q > p){
-      n <- lapply(1, function(x){
-        new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
-      })
-      m <- c(m,n)
-    }else {
-      m <- m
-    }
-    }
-  if(m$age < 10){
-    m <- m
-  }
-  return(m)
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+    }else{
+      n <- NA
+      }
+  return(n)
 }
 
 birth <- function(m){
@@ -148,18 +146,15 @@ microbe_list <- lapply(1:10, function(x){
 
 microbe_list <- lapply(microbe_list, age)
 microbe_list <- lapply(microbe_list, move)
-microbe_list <- lapply(microbe_list,birth)
+## birth
+microbe_list <- c(microbe_list,lapply(microbe_list,birth))
+microbe_list <- microbe_list[!is.na(microbe_list)]
+## death
+logic <- lapply(microbe_list, death)
+survive <- which(logic == "False")
+microbe_list <- microbe_list[survive]
 
 
-  
-  
-  
-  
-  
-  
-  
-  
-  
   
   
   
