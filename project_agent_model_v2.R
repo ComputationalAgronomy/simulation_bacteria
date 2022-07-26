@@ -111,27 +111,48 @@ age <- function(m){
 
 
 death.microbe <- function(m){
-    q <- m$age-50
-    p <- runif(1,0,5)
-    if(q > p){
-      return("True")
-    }else{
-      return("False")
-    }
+  q <- (m$age-50)/10
+  rate <- -dexp(q,1)+1
+  p <- runif(1)
+  if(q > p){
+    return("True")
+  }else{
+    return("False")
+  }
 }
 
 death <- function(m){
   UseMethod("death")
 }
 
+
 birth.microbe <- function(m){
-    q <- m$age-10
-    p <- runif(1,0,5)
-    if(q > p){
+  q <- m$age
+  p <- runif(1)
+  if(10 < q && q <= 15){
+    rate <- 1.5*(q-10)/10
+    if(rate > p){
       n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
     }else{
       n <- NA
-      }
+    }
+  }else if(15 < q && q <= 20){
+    rate <- 0.75
+    if(rate > p){
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+    }else{
+      n <- NA
+    }
+  }else if(20 < q && q<= 30){
+    rate <- 0.75*(30-q)/10
+    if(rate > p){
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+    }else{
+      n <- NA
+    }
+  }else{
+    n <- NA
+  }
   return(n)
 }
 
