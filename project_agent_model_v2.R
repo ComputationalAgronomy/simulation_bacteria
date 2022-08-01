@@ -163,6 +163,22 @@
 #   UseMethod("birth")
 # }
 
+
+
+# Example, create 5 microbes
+microbe_list <- lapply(1:5, function(x){
+  new_microbe(speed = runif(1, 1,5), location=c(0,0))
+})
+
+# generic function
+# age(microbe_list[[1]])
+move(microbe_list[[1]])
+
+
+microbe_list <- lapply(microbe_list, age)
+microbe_list
+
+
 microbe_list <- lapply(1:100, function(x){
   new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })

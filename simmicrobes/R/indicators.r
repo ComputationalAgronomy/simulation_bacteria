@@ -1,7 +1,7 @@
-summary.microbe <- function(m){
-  output <- sprintf("ID: %d\tAge: %d\tSpeed: %.01f\tLoc: %.04f, %.04f\n", m$id, m$age, m$speed, m$location[1], m$location[2])
-  return(cat(output))
-}
+# summary.microbe <- function(m){
+#   output <- sprintf("ID: %d\tAge: %d\tSpeed: %.01f\tLoc: %.04f, %.04f\n", m$id, m$age, m$speed, m$location[1], m$location[2])
+#   return(cat(output))
+# }
 
 
 age_print.microbe <- function(m,n){

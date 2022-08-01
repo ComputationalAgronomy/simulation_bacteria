@@ -38,7 +38,7 @@ validate_microbe <- function(m){
 }
 
 
-microbe <- function(speed = double(), location = c(0,0)){
-  speed <- as.double(speed)
-  new_microbe(speed, location)
-}
+# microbe <- function(speed = double(), location = c(0,0)){
+#   speed <- as.double(speed)
+#   new_microbe(speed, location)
+# }

@@ -31,6 +31,11 @@
 ##y <- -dexp(x,1)+1
 ##plot(x,y)
 
+
+
+
+#' @importFrom stats dexp runif
+#' @export
 death.microbe <- function(m){
   q <- (m$age-50)/10
   rate <- -dexp(q,1)+1
@@ -42,10 +47,12 @@ death.microbe <- function(m){
   }
 }
 
+#' @export
 death <- function(m){
   UseMethod("death")
 }
 
+#' @export
 birth.microbe <- function(m){
   q <- m$age
   p <- runif(1)
@@ -76,7 +83,7 @@ birth.microbe <- function(m){
   return(n)
 }
 
-
+#' @export
 birth <- function(m){
   UseMethod("birth")
 }
