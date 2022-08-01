@@ -171,7 +171,7 @@ microbe_list <- lapply(1:5, function(x){
 })
 
 # generic function
-# age(microbe_list[[1]])
+age(microbe_list[[1]])
 move(microbe_list[[1]])
 
 
