@@ -1,21 +1,21 @@
-static_env <- new.env()
-static_env$id <- 1
+# static_env <- new.env()
+# static_env$id <- 1
 
 
-new_microbe <- function(speed = double(), location = c(0,0)) {
-  stopifnot(is.double(speed))
-  stopifnot(is.double(location))
+# new_microbe <- function(speed = double(), location = c(0,0)) {
+#   stopifnot(is.double(speed))
+#   stopifnot(is.double(location))
   
-  microbe <- structure(list(
-    id = static_env$id,
-    age = 0,
-    speed = speed,
-    location = location),
-    class = c("microbe", "basic_microbe")
-  )
-  static_env$id <- static_env$id  + 1
-  return(microbe)
-}
+#   microbe <- structure(list(
+#     id = static_env$id,
+#     age = 0,
+#     speed = speed,
+#     location = location),
+#     class = c("microbe", "basic_microbe")
+#   )
+#   static_env$id <- static_env$id  + 1
+#   return(microbe)
+# }
 
 
 validate_microbe <- function(m){

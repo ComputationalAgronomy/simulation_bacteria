@@ -17,12 +17,12 @@ new_microbe <- function(speed = double(), location=c(0,0)) {
   return(microbe)
 }
 
-validate_microbe <- function(x){
-  # TODO: validator method
-}
-microbe <- function(x){
-  # TODO: Helper method
-}
+# validate_microbe <- function(x){
+#   # TODO: validator method
+# }
+# microbe <- function(x){
+#   # TODO: Helper method
+# }
 
 
 summary.microbe <- function(m){
