@@ -72,7 +72,7 @@ age <- function(m){
 
 
 
-# # Example, create 5 microbes
+## Example, create 5 microbes
 # microbe_list <- lapply(1:5, function(x){
 #   new_microbe(speed = runif(1, 1,5), location=c(0,0))
 # })
