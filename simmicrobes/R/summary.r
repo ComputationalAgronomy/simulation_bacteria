@@ -1,6 +1,9 @@
 library(ggplot2)
-#' @importFrom ggplot2
-#' @export
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 ggtitle
+#'@export
 
 ## Get the distribution of all the microbes.
 age_print.microbe <- function(m){
@@ -37,3 +40,34 @@ loc_time_print.microbe <- function(m,id,time){
   } 
   return(plot(c,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
+
+## Generate function : n individuals,t iterations.
+##ex:Generate and export a table with initial 5 individuals for 69 iterations.
+
+microbe_generate <- function(n,t){
+microbe_list <- lapply(1:n, function(x){
+  new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
+})
+id <- old <- x <- y <- vector("numeric")
+microbe_table <- vector("list")
+iter <- 1
+while(iter < t){
+  microbe_list <- lapply(microbe_list,age)
+  microbe_list <- lapply(microbe_list, move)
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth))
+  microbe_list <- microbe_list[!is.na(microbe_list)]
+  logic <- lapply(microbe_list, death)
+  survive <- which(logic == "True")
+  microbe_list <- microbe_list[survive]
+for(i in 1:length(microbe_list)){
+    id[i]<- microbe_list[[i]]$id
+    old[i] <- microbe_list[[i]]$age
+    x[i] <- microbe_list[[i]]$location[1]
+    y[i] <- microbe_list[[i]]$location[2]
+    microbe_table[[iter]] <- data.frame(id,old,x,y)
+  }
+  iter <- iter+1
+}
+  return(microbe_table)
+}
+microbe_generate(5,20)
