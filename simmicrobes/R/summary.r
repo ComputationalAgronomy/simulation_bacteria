@@ -1,21 +1,25 @@
-# summary.microbe <- function(m){
-#   output <- sprintf("ID: %d\tAge: %d\tSpeed: %.01f\tLoc: %.04f, %.04f\n", m$id, m$age, m$speed, m$location[1], m$location[2])
-#   return(cat(output))
-# }
+library(ggplot2)
+#' @importFrom ggplot2
+#' @export
 
-
-age_print.microbe <- function(m,n){
+## Get the distribution of all the microbes.
+age_print.microbe <- function(m){
   a <- vector("numeric")
-  for (i in 1:n){
+  for (i in 1:length(m)){
     a[i] <- m[[i]]$age
   }
-  return(graphics::hist(a,xlab = "age"))
+  b <- data.frame(table(a))
+  colnames(b) <- c("age","value")
+  p <- ggplot(data = b, aes(x = age, y = value)) +
+    geom_bar(stat = "identity",width = 0.05)+
+    ggtitle("Age distribution")
+  return(p)
 } 
 
-
-loc_print.microbe <- function(m,n){
+## Get the location of all the microbes.
+loc_print.microbe <- function(m){
   a <- b <- vector("numeric")
-  for(i in 1:n){
+  for(i in 1:length(m)){
     a[i] <- c(m[[i]]$location[1])
     b[i] <- c(m[[i]]$location[2])
     c <- cbind(a,b)
@@ -23,14 +27,13 @@ loc_print.microbe <- function(m,n){
   return(plot(c,main="all_microbe distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
 
-
-loc_time_print.microbe <- function(m,id,t){
+## Track the location of an individual. 
+loc_time_print.microbe <- function(m,id,time){
   a <- b <- vector("numeric")
-  for(i in 1:t){
+  for(i in 1:time){
     a[i] <- c(m[[i]][[id]]$location[1])
     b[i] <- c(m[[i]][[id]]$location[2])
     c <- cbind(a,b)
   } 
   return(plot(c,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
-
