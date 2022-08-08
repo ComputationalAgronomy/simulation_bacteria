@@ -28,21 +28,21 @@ birth.microbe <- function(m){
   if(10 < q && q <= 15){
   rate <- 1.5*(q-10)/10
   if(rate > p){
-    n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+    n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
   }else{
     n <- NA
   }
   }else if(15 < q && q <= 20){
     rate <- 0.75
     if(rate > p){
-      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
     }else{
       n <- NA
     }
   }else if(20 < q && q<= 30){
     rate <- 0.75*(30-q)/10
     if(rate > p){
-      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1))
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
     }else{
       n <- NA
     }

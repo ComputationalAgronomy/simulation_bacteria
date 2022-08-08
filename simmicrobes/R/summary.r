@@ -48,7 +48,7 @@ microbe_generate <- function(n,t){
 microbe_list <- lapply(1:n, function(x){
   new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })
-id <- old <- x <- y <- vector("numeric")
+id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")
 microbe_table <- vector("list")
 iter <- 1
 while(iter < t){
@@ -64,10 +64,17 @@ for(i in 1:length(microbe_list)){
     old[i] <- microbe_list[[i]]$age
     x[i] <- microbe_list[[i]]$location[1]
     y[i] <- microbe_list[[i]]$location[2]
-    microbe_table[[iter]] <- data.frame(id,old,x,y)
+    parent[i] <- microbe_list[[i]]$parent
+    microbe_table[[iter]] <- data.frame(id,old,x,y,parent)
   }
   iter <- iter+1
 }
-  return(microbe_table)
+for(i in 1:length(microbe_table)){
+  amount[i] <- nrow(microbe_table[[i]])
+  average_age[i] <- colMeans(microbe_table[[i]][2])
+  table <- data.frame(amount,average_age)
 }
-microbe_generate(5,20)
+  return(table)
+}
+
+## microbe_generate(5,30)

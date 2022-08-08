@@ -2,16 +2,18 @@
 static_env <- new.env()
 static_env$id <- 1
 
+
 # Note. Store location as vector instead of matrix.
 #' @export
-new_microbe <- function(speed = double(), location=c(0,0)) {
+new_microbe <- function(speed = double(), location=c(0,0),parent = NA) {
   stopifnot(is.double(speed))
 
   microbe <- structure(list(
     id = static_env$id,
     age = 0,
     speed = speed,
-    location = location),
+    location = location,
+    parent = parent),
     class = c("microbe", "basic_microbe")
   )
   static_env$id <- static_env$id  + 1
@@ -27,7 +29,7 @@ new_microbe <- function(speed = double(), location=c(0,0)) {
 
 #' @export
 summary.microbe <- function(m){
-  output <- sprintf("ID: %d\tAge: %d\tSpeed: %.01f\tLoc: %.04f, %.04f\n", m$id, m$age, m$speed, m$location[1], m$location[2])
+  output <- sprintf("ID: %d\tAge: %d\tSpeed: %.01f\tLoc: %.04f, %.04f\tParent: %d\n", m$id, m$age, m$speed, m$location[1], m$location[2],m$parent)
   return(cat(output))
 }
 
@@ -65,7 +67,7 @@ age.microbe <- function(m){
   return(m)
 }
 
-# funcions and generic method with UseMethod()
+# functions and generic method with UseMethod()
 age <- function(m){
   UseMethod("age")
 }
