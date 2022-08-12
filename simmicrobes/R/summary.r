@@ -52,7 +52,7 @@ microbe_list <- lapply(1:n, function(x){
 id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")
 microbe_table <- vector("list")
 iter <- 1
-while(iter < t){
+while(iter <= t){
   microbe_list <- lapply(microbe_list,age)
   microbe_list <- lapply(microbe_list, move)
   microbe_list <- c(microbe_list,lapply(microbe_list,birth,p,st_birth,mean,sd))
@@ -60,7 +60,13 @@ while(iter < t){
   logic <- lapply(microbe_list,death,st_death,b)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
-for(i in 1:length(microbe_list)){
+  id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")  
+  l <- length(microbe_list)
+ if(l == 0){
+  print(paste("All microbes die at i th iteration where i = ", iter))
+  break
+}else{
+  for(i in 1:l){
     id[i]<- microbe_list[[i]]$id
     old[i] <- microbe_list[[i]]$age
     x[i] <- microbe_list[[i]]$location[1]
@@ -68,16 +74,17 @@ for(i in 1:length(microbe_list)){
     parent[i] <- microbe_list[[i]]$parent
     microbe_table[[iter]] <- data.frame(id,old,x,y,parent)
   }
+}
   iter <- iter+1
 }
- 
 for(i in 1:length(microbe_table)){
   amount[i] <- nrow(microbe_table[[i]])
   average_age[i] <- colMeans(microbe_table[[i]][2])
   table <- data.frame(amount,average_age)
 }
-  return(table)
-}
+return(table)
+ }
 
-## microbe_generate(100,50,0.1,10,1,1,10,10)
 
+
+##  microbe_generate(5,100,1,10,1,1,30,1)
