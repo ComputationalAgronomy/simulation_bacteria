@@ -4,9 +4,9 @@
 ## st: the age microbes begin to die.
 ## b: the parameter of death rate. Basically, b>=0, the bigger b is, the higher death rate is.
 ## Due to the model,death rate will never reach 1. 
-death.microbe <- function(m,st,b){
-  if (m$age > st){
-  q <- (m$age-st)/10
+death.microbe <- function(m,st_death,b){
+  if (m$age >= st_death){
+  q <- (m$age-st_death)/10
   p <- runif(1)
   rate <- -dexp(q,b)/b+1
   if(rate < p){
@@ -20,7 +20,7 @@ death.microbe <- function(m,st,b){
 }
 
 #' @export
-death <- function(m){
+death <- function(m,st_death,b){
   UseMethod("death")
 }
 
@@ -32,23 +32,26 @@ death <- function(m){
 ## mean and sd are the parameters determine the figure of the normal distribution.
 ## Since there are so many parameters, it' recommended to fix mean = 0, sd = 0.5, p = 1 for a specific test.
 
-birth.microbe <- function(m,p,st,mean,sd){
+birth.microbe <- function(m,p,st_birth,mean,sd){
   a <- m$age
-  b <- runif(1)
-  c <- runif(2)
-  rate <- p*dnorm((a-st)/10,mean,sd)
-  if(rate > c){
-    n <- lapply(1:2, function(x){
-      new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
-    })
-  }else if(rate > b){
+  b <- runif(1,0,1)
+  rate <- p*dnorm((a-st_birth)/10,mean,sd)
+  if(a >= st_birth){
+  if(rate > b){
     n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id) 
+  }else{
+    n <- NA
+  }
   }else{
     n <- NA
   }
   return(n)
 }
 
+#' @export
+birth <- function(m,p,st_birth,mean,sd){
+  UseMethod("birth")
+} 
 ## Below is the first used model,feel free to use it again. 
 #birth.microbe <- function(m){
 #  q <- m$age
@@ -79,8 +82,3 @@ birth.microbe <- function(m,p,st,mean,sd){
 #  }
 #  return(n)
 #}
-
-#' @export
-birth <- function(m){
-  UseMethod("birth")
-}

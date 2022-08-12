@@ -41,10 +41,11 @@ loc_time_print.microbe <- function(m,id,time){
   return(plot(c,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
 
-## Generate function : n individuals,t iterations.
-##ex:Generate and export a table with initial 5 individuals for 69 iterations.
-
-microbe_generate <- function(n,t){
+## Generate function : n individuals,t iterations. t:iterations
+## p,st_birth,mean,sd: parameters of birth.
+## st_death,b: parameters of death.
+## ex:Generate and export a table with initial 5 individuals for 69 iterations.
+microbe_generate <- function(n,t,p,st_birth,mean,sd,st_death,b){
 microbe_list <- lapply(1:n, function(x){
   new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })
@@ -54,9 +55,9 @@ iter <- 1
 while(iter < t){
   microbe_list <- lapply(microbe_list,age)
   microbe_list <- lapply(microbe_list, move)
-  microbe_list <- c(microbe_list,lapply(microbe_list,birth))
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth,p,st_birth,mean,sd))
   microbe_list <- microbe_list[!is.na(microbe_list)]
-  logic <- lapply(microbe_list, death)
+  logic <- lapply(microbe_list,death,st_death,b)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
 for(i in 1:length(microbe_list)){
@@ -69,6 +70,7 @@ for(i in 1:length(microbe_list)){
   }
   iter <- iter+1
 }
+ 
 for(i in 1:length(microbe_table)){
   amount[i] <- nrow(microbe_table[[i]])
   average_age[i] <- colMeans(microbe_table[[i]][2])
@@ -77,4 +79,5 @@ for(i in 1:length(microbe_table)){
   return(table)
 }
 
-## microbe_generate(5,30)
+## microbe_generate(100,50,0.1,10,1,1,10,10)
+
