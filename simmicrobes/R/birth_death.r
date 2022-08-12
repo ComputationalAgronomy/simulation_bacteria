@@ -30,18 +30,18 @@ death <- function(m,st_death,b){
 ## p is a constant which duplicates the birth rate p times.
 ## st is the age that microbes start to give birth.
 ## mean and sd are the parameters determine the figure of the normal distribution.
-## Since there are so many parameters, it' recommended to fix mean = 0, sd = 0.5, p = 1 for a specific test.
+## Since there are so many parameters, it' recommended to fix mean = 3, sd = 1, p = 1 for a specific test.
 
 birth.microbe <- function(m,p,st_birth,mean,sd){
   a <- m$age
   b <- runif(1,0,1)
   rate <- p*dnorm((a-st_birth)/10,mean,sd)
   if(a >= st_birth){
-  if(rate > b){
-    n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id) 
-  }else{
-    n <- NA
-  }
+    if(rate > b){
+      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id) 
+    }else{
+      n <- NA
+    }
   }else{
     n <- NA
   }

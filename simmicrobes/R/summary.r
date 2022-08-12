@@ -87,4 +87,4 @@ return(table)
 
 
 
-##  microbe_generate(5,100,1,10,1,1,30,1)
+##  microbe_generate(100,100,1,10,3,1,30,1)
