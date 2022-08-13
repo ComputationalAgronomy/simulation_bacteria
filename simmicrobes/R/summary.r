@@ -55,11 +55,11 @@ iter <- 1
 while(iter <= t){
   microbe_list <- lapply(microbe_list,age)
   microbe_list <- lapply(microbe_list, move)
-  microbe_list <- c(microbe_list,lapply(microbe_list,birth,p,st_birth,mean,sd))
-  microbe_list <- microbe_list[!is.na(microbe_list)]
   logic <- lapply(microbe_list,death,st_death,b)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth,p,st_birth,mean,sd))
+  microbe_list <- microbe_list[!is.na(microbe_list)]
   id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")  
   l <- length(microbe_list)
  if(l == 0){
