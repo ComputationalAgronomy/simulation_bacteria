@@ -8,7 +8,7 @@ microbe_test <-  function(n,t,p,st_birth,mean,sd,st_death,b){
   microbe_list <- lapply(1:n, function(x){
     new_microbe(speed = runif(1,1,5), location=c(0,0))
   })
-  id <- old <- parent <- amount <- average_age <- vector("numeric")
+  id <- old <- amount <- average_age <- vector("numeric")
   microbe_table <- vector("list")
   iter <- 1
   while(iter <= t){
@@ -18,7 +18,7 @@ microbe_test <-  function(n,t,p,st_birth,mean,sd,st_death,b){
   microbe_list <- microbe_list[survive]
   microbe_list <- c(microbe_list,lapply(microbe_list,birth,p,st_birth,mean,sd))
   microbe_list <- microbe_list[!is.na(microbe_list)]
-  id <- old <- parent <- amount <- average_age <- vector("numeric")
+  id <- old <- amount <- average_age <- vector("numeric")
   l <- length(microbe_list)
   
   if(l == 0){
@@ -28,8 +28,7 @@ microbe_test <-  function(n,t,p,st_birth,mean,sd,st_death,b){
     for(i in 1:l){
       id[i]<- microbe_list[[i]]$id
       old[i] <- microbe_list[[i]]$age
-      parent[i] <- microbe_list[[i]]$parent
-      microbe_table[[iter]] <- data.frame(id,old,parent)
+      microbe_table[[iter]] <- data.frame(id,old)
     }
   }
   iter <- iter+1
