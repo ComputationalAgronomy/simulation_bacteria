@@ -41,3 +41,14 @@ microbe_test <-  function(n,t,p,st_birth,mean,sd,st_death,b){
   }
   return(table)
 }
+
+
+# ex. microbe_test(100,100,1,10,3,1,30,1)
+result <- matrix(NA,nrow = 20, ncol = 100)
+iter <- 1
+while(iter < 20){
+  y <-  microbe_test(100,100,1,10,3,1,30,1)
+  result[iter,] <- y[,1]
+  result[iter+1,] <- y[,2]
+  iter <- iter + 2
+}
