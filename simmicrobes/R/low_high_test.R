@@ -40,6 +40,7 @@ microbe_test <-  function(n,t,st_birth,turning_point,b,c,st_death,d){
   return(table)
 }
 
+<<<<<<< HEAD
 ## n = initial population 
 ## t = iteration(age)
 ## r = replication
@@ -79,3 +80,15 @@ low_high_mean_amount <- apply(low_high_amount,1,mean)
 plot(1:t,low_high_mean_amount,type = 'l',lwd=2,ylim = c(0,max(low_high_mean_amount)),
      xlab = 'age',ylab = 'amount',main = 'low_high_test')
 }
+=======
+
+# ex. microbe_test(100,100,1,10,3,1,30,1)
+result <- matrix(NA,nrow = 20, ncol = 100)
+iter <- 1
+while(iter < 20){
+  y <-  microbe_test(100,100,1,10,3,1,30,1)
+  result[iter,] <- y[,1]
+  result[iter+1,] <- y[,2]
+  iter <- iter + 2
+}
+>>>>>>> 2b9b73c4ad833059cbec3bf9813b1212d3da6f54
