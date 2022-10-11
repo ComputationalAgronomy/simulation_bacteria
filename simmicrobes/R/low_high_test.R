@@ -53,7 +53,7 @@ for(i in 1:r){
   low_low_amount[,i] <- low_low_test[[i]][,1]
 }
 low_low_mean_amount <- apply(low_low_amount,1,mean)
-plot(1:t,low_low_mean_amount,type = 'l',lwd=2,ylim = c((3/4)*(min(low_low_mean_amount)),max(low_low_mean_amount)),
+plot(1:t,low_low_mean_amount,type = 'l',lwd=2,ylim = c((1/2)*(min(low_low_mean_amount)),max(low_low_mean_amount)),
      xlab = 'age',ylab = 'amount',main = 'low_low_test')
 
 low_median_test <- vector("list")
@@ -79,14 +79,68 @@ for(i in 1:r){
 low_high_mean_amount <- apply(low_high_amount,1,mean)
 plot(1:t,low_high_mean_amount,type = 'l',lwd=2,ylim = c(0,max(low_high_mean_amount)),
      xlab = 'age',ylab = 'amount',main = 'low_high_test')
+
+median_low_test <- vector("list")
+median_low_amount <- matrix(0,t,r)
+for(i in 1:r){
+  median_low_test[[i]] <- microbe_test(n,t,10,30,1,1,10,0.5)
+  median_low_amount[,i] <- median_low_test[[i]][,1]
+}
+median_low_mean_amount <- apply(median_low_amount,1,mean)
+plot(1:t,median_low_mean_amount,type = 'l',lwd=2,ylim = c(min(median_low_mean_amount),max(median_low_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'median_low_test')
+
+median_median_test <- vector("list")
+median_median_amount <- matrix(0,t,r)
+for(i in 1:r){
+  median_median_test[[i]] <- microbe_test(n,t,10,30,1,1,10,1)
+  median_median_amount[,i] <- median_median_test[[i]][,1]
+}
+median_median_mean_amount <- apply(median_median_amount,1,mean)
+plot(1:t,median_median_mean_amount,type = 'l',lwd=2,ylim = c((1/2)*min(median_median_mean_amount),max(median_median_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'median_median_test')
+
+median_high_test <- vector("list")
+median_high_amount <- matrix(0,t,r)
+for(i in 1:r){
+  median_high_test[[i]] <- microbe_test(n,t,10,30,1,1,10,2)
+  for(j in 1:length(median_high_test[[i]][,1])){
+    median_high_amount[j,i] <- median_high_test[[i]][,1][j]
+  }
+}
+median_high_mean_amount <- apply(median_high_amount,1,mean)
+plot(1:t,median_high_mean_amount,type = 'l',lwd=2,ylim = c(0,max(median_high_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'median_high_test')
+
+high_low_test <- vector("list")
+high_low_amount <- high_low_age <- matrix(0,t,r)
+for(i in 1:r){
+  high_low_test[[i]] <- microbe_test(n,t,10,30,2,0.5,10,0.5)
+  high_low_amount[,i] <- high_low_test[[i]][,1]
+}
+high_low_mean_amount <- apply(high_low_amount,1,mean)
+plot(1:t,high_low_mean_amount,type = 'l',lwd=2,ylim = c(min(high_low_mean_amount),max(high_low_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'high_low_test')
+
+high_median_test <- vector("list")
+high_median_amount <- high_median_age <- matrix(0,t,r)
+for(i in 1:r){
+  high_median_test[[i]] <- microbe_test(n,t,10,30,2,0.5,10,1)
+  high_median_amount[,i] <- high_median_test[[i]][,1]
+}
+high_median_mean_amount <- apply(high_median_amount,1,mean)
+plot(1:t,high_median_mean_amount,type = 'l',lwd=2,ylim = c(min(high_median_mean_amount),max(high_median_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'high_median_test')
+
+high_high_test <- vector("list")
+high_high_amount <- high_high_age <- matrix(0,t,r)
+for(i in 1:r){
+  high_high_test[[i]] <- microbe_test(n,t,10,30,2,0.5,10,2)
+  high_high_amount[,i] <- high_high_test[[i]][,1]
+}
+high_high_mean_amount <- apply(high_high_amount,1,mean)
+plot(1:t,high_high_mean_amount,type = 'l',lwd=2,ylim = c((1/2)*min(high_high_mean_amount),max(high_high_mean_amount)),
+     xlab = 'age',ylab = 'amount',main = 'high_high_test')
+par(mfrow=c(1,1))
 }
 
-# ex. microbe_test(100,100,1,10,3,1,30,1)
-result <- matrix(NA,nrow = 20, ncol = 100)
-iter <- 1
-while(iter < 20){
-  y <-  microbe_test(100,100,1,10,3,1,30,1)
-  result[iter,] <- y[,1]
-  result[iter+1,] <- y[,2]
-  iter <- iter + 2
-}
