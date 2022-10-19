@@ -47,7 +47,7 @@ loc_time_print.microbe <- function(m,id,time){
 ## ex:Generate and export a table with initial 100 individuals for 100 iterations.
 microbe_generate <- function(n,t,st_birth,turning_point,b,c,st_death,d){
 microbe_list <- lapply(1:n, function(x){
-  new_microbe(speed = runif(1, 1,5), location=c(runif(1,0,10),runif(1,0,10)))
+  new_microbe(speed = runif(1,1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })
 id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")
 microbe_table <- vector("list")
