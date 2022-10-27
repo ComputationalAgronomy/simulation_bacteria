@@ -54,19 +54,38 @@ print.microbe <- function(m){
 # Note: These two methods summary and print, already have generic method setup.
 # Therefore we can call summary(m), print(m)
 
+
+## Background microbes has a preference to move (0,90d)
+## Movement is also influenced by the density of microbes in 4 directions.
 #' @export
-move.microbe <- function(m){
+move.background <- function(m,n1,n2,n3,n4){
+  w <- (4/5)/(2/(n1+1)+1/(n2+1)+1/(n3+1)+1/(n4+1))
+  p1 <- w*2/(n1+1)
+  p2 <- w/(n2+1)
+  p3 <- w/(n3+1)
+  p4 <- w/(n4+1)
   p <- runif(1,0,1)
-  if (p < 3/4){## prop of (0,90d) = 3/4
+  if (p < 1/5){
+    theta <- NA
+  }else if(p < 1/5+p1){
     theta <- runif(1,0,pi/2)
-  }else {
-    theta <- runif(1,pi/2,2*pi)
+  }else if(p < 1/5+p1+p2){
+    theta <- runif(1,pi/2,pi)
+  }else if(p < 1/5+p1+p2+p3){
+    theta <- runif(1,pi,3*pi/2)
+  }else{
+    theta <- runif(1,3*pi/2,2*pi)
   }
-  
+  if(is.na(theta) == T){
+    m$location[1] <- m$location[1]
+    m$location[2] <- m$location[2]
+  }else{
   m$location[1] <- m$location[1]+m$speed*cos(theta)
   m$location[2] <- m$location[2]+m$speed*sin(theta)
+  }
   return(m)
 }
+
 move <- function(m){
   UseMethod("move")
 }

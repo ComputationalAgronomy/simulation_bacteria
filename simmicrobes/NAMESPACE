@@ -3,7 +3,7 @@
 S3method(age,microbe)
 S3method(birth,microbe)
 S3method(death,microbe)
-S3method(move,microbe)
+S3method(move,background)
 S3method(print,microbe)
 S3method(summary,microbe)
 export(age_print.microbe)
