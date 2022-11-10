@@ -7,7 +7,7 @@
 death.microbe <- function(m,st_death,d){
   if (m$age >= st_death){
   q <- (m$age-st_death)/10
-  p <- runif(1)
+  p <- runif(1,0,1)
   rate <- -dexp(q,d)/d+1
   if(rate < p){
     return("True")
