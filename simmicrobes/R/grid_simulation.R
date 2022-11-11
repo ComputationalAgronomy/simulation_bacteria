@@ -27,8 +27,8 @@ while(iter<=t){
       n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
       n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
     }
-  background_list <- lapply(seq_along(background_list), function(i){move.background(background_list[[i]],
-                                                                  n1[i],n2[i],n3[i],n4[i])})
+  density <- cbind(n1,n2,n3,n4)
+  background_list <- lapply(seq_along(background_list), function(i){move(background_list[[i]],density[i,])})
   }else{
     print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
     break
@@ -73,8 +73,8 @@ background_simulation <- function(n,t,boundary,st_birth,turning_point,b,c,st_dea
         n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
         n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
       }
-      background_list <- lapply(seq_along(background_list), function(i){move.background(background_list[[i]],
-                                                                                n1[i],n2[i],n3[i],n4[i])})
+      density <- cbind(n1,n2,n3,n4)
+      background_list <- lapply(seq_along(background_list), function(i){move.background(background_list[[i]],density[i,])})
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break

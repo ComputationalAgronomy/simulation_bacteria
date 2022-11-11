@@ -12,12 +12,12 @@ test_that("if the background microbes move by rules",{
   n2 <- sum(x[-1] > x[1]-1 & x[-1] < x[1] & y[-1] > y[1] & y[-1] < y[1]+1 & d<1 )
   n3 <- sum(x[-1] > x[1]-1 & x[-1] < x[1] & y[-1] > y[1]-1 & y[-1] < y[1] & d<1 )
   n4 <- sum(x[-1] > x[1] & x[-1] < x[1]+1 & y[-1] > y[1]-1 & y[-1] < y[1] & d<1 )
-  
+  density <- cbind(n1,n2,n3,n4)
   t1 <- t2 <- t3 <- t4 <- t5 <- 0
   iter <- 1
   t <- vector("numeric")
   while(iter <= 20000){
-    t <- move.background(background_list[[1]],n1,n2,n3,n4)$location
+    t <-  move.background(background_list[[1]],density)$location
     tx <- t[1]
     ty <- t[2]
     if(tx > x[1] & tx < x[1]+1 & ty > y[1] & ty < y[1]+1){
@@ -44,6 +44,25 @@ test_that("if the background microbes move by rules",{
   p4 <- w/(n4+1)
   p5 <- 0.2
   expect_equal(c(t1,t2,t3,t4,t5)/20000,c(p1,p2,p3,p4,0.2),tolerance = 0.05)
+})
+
+test_that("if the general microbes move by rules",{
+  microbe_list <- lapply(1:2, function(x){
+    new_microbe(speed = runif(1,0,1), location=c(runif(1,0,1),runif(1,0,1)))
+  })
+  x <- microbe_list[[1]]$location
+  n1 <- n2 <- 0
+  iter <- 1
+  while(iter <= 10000){
+   tx <- lapply(microbe_list, move)[[1]]$location
+    if(x[[1]] == tx[[1]] & x[[2]] == tx[[2]]){
+      n1 <- n1+1
+    }else{
+      n2 <- n2+1
+    }
+   iter <- iter+1
+  }
+  expect_equal(n1/(n1+n2),1/5,tolerance = 0.05)
 })
 
 

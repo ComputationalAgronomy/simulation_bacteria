@@ -14,12 +14,13 @@ new_microbe <- function(speed = double(), location=c(0,0),parent = NA) {
     speed = speed,
     location = location,
     parent = parent),
-    class = c("microbe", "basic_microbe")
+    class = c("microbe", "general")
   )
   static_env$id <- static_env$id  + 1
   return(microbe)
 }
 
+#' @export
 background_microbe <- function(speed = double(), location=c(0,0),parent = NA){
   stopifnot(is.double(speed))
   
@@ -29,7 +30,7 @@ background_microbe <- function(speed = double(), location=c(0,0),parent = NA){
     speed = speed,
     location = location ,
     parent = parent),
-    class = c("microbe", "background_microbe")
+    class = c("microbe", "background")
   )
     static_env$id <- static_env$id  + 1
     return(microbe)
@@ -58,7 +59,16 @@ print.microbe <- function(m){
 ## Background microbes has a preference to move (0,90d)
 ## Movement is also influenced by the density of microbes in 4 directions.
 #' @export
-move.background <- function(m,n1,n2,n3,n4){
+move <- function(m,density){
+   UseMethod("move")
+}
+
+#' @export
+move.background <- function(m,density){
+  n1 <- density[1]
+  n2 <- density[2]
+  n3 <- density[3]
+  n4 <- density[4]
   w <- (4/5)/(2/(n1+1)+1/(n2+1)+1/(n3+1)+1/(n4+1))
   p1 <- w*2/(n1+1)
   p2 <- w/(n2+1)
@@ -86,11 +96,20 @@ move.background <- function(m,n1,n2,n3,n4){
   return(m)
 }
 
-move <- function(m){
-  UseMethod("move")
+#' @export
+move.general <- function(m,density){
+  density <- NA
+  p <- runif(1,0,1)
+  if(p<1/5){
+    m$location[1] <- m$location[1]
+    m$location[2] <- m$location[2]
+  }else{
+    theta <- runif(1,0,2*pi)
+    m$location[1] <- m$location[1]+m$speed*cos(theta)
+    m$location[2] <- m$location[2]+m$speed*sin(theta)
+  }
+  return(m)
 }
-
-
 
 # Age function without generic method
 #' @export
