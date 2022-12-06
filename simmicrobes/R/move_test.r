@@ -6,3 +6,4 @@ move_test_background <- function(n,boundary = 100,t1,t2,t3){
   par(mfrow=c(1,1))
 }
 
+

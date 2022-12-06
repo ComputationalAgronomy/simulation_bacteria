@@ -46,7 +46,7 @@ birth.microbe <- function(m,st_birth,turning_point,b,c){
     p <- runif(1,0,1)
     rate <- -dexp(q,b)/b+1
     if(rate > p){
-      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
+      n <- new_microbe(speed = runif(1,0,1), location=c(m$location[1]+1,m$location[2]+1),parent = m$id)
     }else{
       n <- NA
     }
@@ -57,7 +57,7 @@ birth.microbe <- function(m,st_birth,turning_point,b,c){
     p <- runif(1,0,1)
     rate <- k*dexp(q,c)/c
     if(rate > p){
-      n <- new_microbe(speed = runif(1, 1,5), location=c(m$location[1],m$location[2]),parent = m$id)
+      n <- new_microbe(speed = runif(1,0,1), location=c(m$location[1],m$location[2]),parent = m$id)
     }else{
       n <- NA
     }
