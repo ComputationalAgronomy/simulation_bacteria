@@ -22,10 +22,10 @@ while(iter<=t){
   distance <- vector("numeric")
     for(i in 1:length(background_list)){
       distance <- (x[i]-x[-i])^2+(y[i]-y[-i])^2
-      n1[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i] & y[-i] < y[i]+1 & d<1)
-      n2[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i] & y[-i] < y[i]+1 & d<1)
-      n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
-      n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
+      n1[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i] & y[-i] < y[i]+1 & distance<1)
+      n2[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i] & y[-i] < y[i]+1 & distance<1)
+      n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & distance<1)
+      n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & distance<1)
     }
   density <- cbind(n1,n2,n3,n4)
   background_list <- lapply(seq_along(background_list), function(i){move(background_list[[i]],density[i,])})
@@ -35,7 +35,7 @@ while(iter<=t){
   }
   iter <- iter+1
 }
-  return(loc_print.microbe(background_list))
+  return(loc_print.background(background_list))
 }
   
 
@@ -68,10 +68,10 @@ background_simulation <- function(n,t,boundary,st_birth,turning_point,b,c,st_dea
       distance <- vector("numeric")
       for(i in 1:length(background_list)){
         distance <- (x[i]-x[-i])^2+(y[i]-y[-i])^2
-        n1[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i] & y[-i] < y[i]+1 & d<1)
-        n2[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i] & y[-i] < y[i]+1 & d<1)
-        n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
-        n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & d<1)
+        n1[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i] & y[-i] < y[i]+1 & distance<1)
+        n2[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i] & y[-i] < y[i]+1 & distance<1)
+        n3[i] <- sum(x[-i] > x[i]-1 & x[-i] < x[i] & y[-i] > y[i]-1 & y[-i] < y[i] & distance<1)
+        n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+1 & y[-i] > y[i]-1 & y[-i] < y[i] & distance<1)
       }
       density <- cbind(n1,n2,n3,n4)
       background_list <- lapply(seq_along(background_list), function(i){move.background(background_list[[i]],density[i,])})
@@ -92,6 +92,6 @@ background_simulation <- function(n,t,boundary,st_birth,turning_point,b,c,st_dea
     background_list <- background_list[!is.na(background_list)]
     iter <- iter+1
   }
-  return(loc_print.microbe(background_list))
+  return(background_list)
   }
 
