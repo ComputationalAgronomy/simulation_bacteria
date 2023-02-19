@@ -20,7 +20,7 @@ age_print.microbe <- function(m){
 } 
 
 ## Get the location of all the microbes.
-loc_print.background <- function(m){
+loc_print.microbe <- function(m){
   a <- b <- vector("numeric")
   for(i in 1:length(m)){
     a[i] <- c(m[[i]]$location[1])
@@ -28,8 +28,6 @@ loc_print.background <- function(m){
     c <- cbind(a,b)
   }
   plot(c,main="all_microbe distribution",xlab="X",ylab="Y",cex=0.5,pch=18)
-  abline(lm(b ~ a))
-  abline(0,1,col = "blue")
 } 
 
 ## Track the location of an individual. 

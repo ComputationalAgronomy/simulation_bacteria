@@ -59,32 +59,49 @@ print.microbe <- function(m){
 ## Background microbes has a preference to move (0,90d)
 ## Movement is also influenced by the density of microbes in 4 directions.
 #' @export
-move <- function(m,density){
+move <- function(m,density,resource){
    UseMethod("move")
 }
 
+library(raster)
+
+## resource should be a point, such as c(5,5)
 #' @export
-move.background <- function(m,density){
-  n1 <- density[1]
-  n2 <- density[2]
-  n3 <- density[3]
-  n4 <- density[4]
-  w <- (4/5)/(2/(n1+1)+1/(n2+1)+1/(n3+1)+1/(n4+1))
-  p1 <- w*2/(n1+1)
-  p2 <- w/(n2+1)
-  p3 <- w/(n3+1)
-  p4 <- w/(n4+1)
-  p <- runif(1,0,1)
-  if (p < 1/5){
-    theta <- NA
-  }else if(p < 1/5+p1){
-    theta <- runif(1,0,pi/2)
-  }else if(p < 1/5+p1+p2){
-    theta <- runif(1,pi/2,pi)
-  }else if(p < 1/5+p1+p2+p3){
-    theta <- runif(1,pi,3*pi/2)
+
+angle.cal <- function(r,m){
+  a <- r - m
+  b <- c(1,0)
+  if(m[2] >= r[2]){
+    angle <- 2*pi-(acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))))
   }else{
-    theta <- runif(1,3*pi/2,2*pi)
+   angle <- acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))) 
+  }
+  return(angle)
+}
+
+
+move.background <- function(m,density,resource){
+  angle <- angle.cal(resource,m$location)
+  ori <- runif(100,0,2*pi)
+  prob <- dnorm(ori,angle,1)
+  for(i in 1:length(ori)){
+    if(ori[i] > 0 & ori[i] < pi/2){
+      prob[i] <- prob[i]*density[1]
+    }
+    if(ori[i] > pi/2 & ori[i] < pi){
+      prob[i] <- prob[i]*density[2]
+    }
+    if(ori[i] > pi & ori[i] < 3*pi/2){
+      prob[i] <- prob[i]*density[3]
+    }else{
+      prob[i] <- prob[i]*density[4]
+    }
+  }
+  p <- runif(1,0,1)
+  if(p < 0.9){
+    theta <- sample(ori,1,prob = prob)
+  }else{
+    theta <- NA
   }
   if(is.na(theta) == T){
     m$location[1] <- m$location[1]
@@ -96,20 +113,29 @@ move.background <- function(m,density){
   return(m)
 }
 
+## if no preference involved.
 #' @export
-move.general <- function(m,density){
-  density <- NA
+move.general <- function(m,density,resource = NA){
   p <- runif(1,0,1)
-  if(p<1/5){
+  if(p < 0.9){
+    o1 <- runif(1,0,pi/2)
+    o2 <- runif(1,pi/2,pi)
+    o3 <- runif(1,pi,3*pi/2)
+    o4 <- runif(1,3*pi/2,2*pi)
+   theta <- sample(c(o1,o2,o3,o4),1,prob = density)
+  }else{
+    theta <- NA
+  }
+  if(is.na(theta) == T){
     m$location[1] <- m$location[1]
     m$location[2] <- m$location[2]
   }else{
-    theta <- runif(1,0,2*pi)
     m$location[1] <- m$location[1]+m$speed*cos(theta)
     m$location[2] <- m$location[2]+m$speed*sin(theta)
   }
   return(m)
 }
+
 
 # Age function without generic method
 #' @export
