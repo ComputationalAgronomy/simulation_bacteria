@@ -59,7 +59,7 @@ print.microbe <- function(m){
 ## Background microbes has a preference to move (0,90d)
 ## Movement is also influenced by the density of microbes in 4 directions.
 #' @export
-move <- function(m,density,resource){
+move <- function(m,distance,angle,radius,resource){
    UseMethod("move")
 }
 
@@ -68,41 +68,40 @@ library(raster)
 ## resource should be a point, such as c(5,5)
 #' @export
 
-angle.cal <- function(r,m){
-  a <- r - m
-  b <- c(1,0)
-  if(m[2] >= r[2]){
-    angle <- 2*pi-(acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))))
-  }else{
-   angle <- acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))) 
-  }
-  return(angle)
-}
-
-
-move.background <- function(m,density,resource){
-  angle <- angle.cal(resource,m$location)
-  ori <- runif(100,0,2*pi)
-  prob <- dnorm(ori,angle,1)
-  for(i in 1:length(ori)){
-    if(ori[i] > 0 & ori[i] < pi/2){
-      prob[i] <- prob[i]*density[1]
-    }
-    if(ori[i] > pi/2 & ori[i] < pi){
-      prob[i] <- prob[i]*density[2]
-    }
-    if(ori[i] > pi & ori[i] < 3*pi/2){
-      prob[i] <- prob[i]*density[3]
-    }else{
-      prob[i] <- prob[i]*density[4]
-    }
-  }
+move.background <- function(m,distance_table,angle_table,radius,resource){
   p <- runif(1,0,1)
-  if(p < 0.9){
-    theta <- sample(ori,1,prob = prob)
-  }else{
+  if(p < 0.1){
     theta <- NA
+  }else{
+  angle <- angle.cal(resource,m$location)
+  ori <- seq(pi/180,2*pi,pi/180)
+  prob <- dnorm(ori,angle,0.5)
+  n <- 0
+  angle_modify <- vector()
+  it <- 1
+  while(it <= length(ori)){
+    angle_ins <- angle_table[which(distance_table <= radius)]
+    if(length(angle_ins) > 0){
+    angle_modify <- angle_ins - ori[it]
+    for(i in 1:length(angle_modify)){
+      if (angle_modify[i] < 0){
+        angle_modify[i] <- angle_modify[i]+2*pi
+      }else{
+        angle_modify[i] <- angle_modify[i]
+      }
+    if(angle_modify[i] < pi/12 | angle_modify[i] > 11*pi/12){
+      n <- n+1
+    }
+    }
+    }else{
+      n <- 0
+    }
+    prob[it] <- (1/(n+1))*prob[it]
+    it <- it+1
   }
+   theta <- sample(ori,1,prob = prob)
+  }
+ 
   if(is.na(theta) == T){
     m$location[1] <- m$location[1]
     m$location[2] <- m$location[2]
@@ -115,16 +114,40 @@ move.background <- function(m,density,resource){
 
 ## if no preference involved.
 #' @export
-move.general <- function(m,density,resource = NA){
+move.general <- function(m,distance_table,angle_table,radius,resource = NA){
   p <- runif(1,0,1)
-  if(p < 0.9){
-    o1 <- runif(1,0,pi/2)
-    o2 <- runif(1,pi/2,pi)
-    o3 <- runif(1,pi,3*pi/2)
-    o4 <- runif(1,3*pi/2,2*pi)
-   theta <- sample(c(o1,o2,o3,o4),1,prob = density)
-  }else{
+  if(p < 0.1){
     theta <- NA
+  }else{
+  ori <- seq(pi/180,2*pi,pi/180)
+  prob <- rep(1,360)
+  it <- 1
+  while(it <= length(ori)){
+    n <- 0
+    angle_modify <- vector()
+    angle_ins <- angle_table[which(distance_table <= radius)]
+    if(length(angle_ins) > 0){
+      angle_modify <- ori[it] - angle_ins
+      
+      for(i in 1:length(angle_modify)){
+        if (angle_modify[i] < 0){
+          angle_modify[i] <- angle_modify[i]+2*pi
+        }else{
+          angle_modify[i] <- angle_modify[i]
+        }
+        if(angle_modify[i] <= pi/12 | angle_modify[i] >= 23*pi/12){
+          n <- n+1
+        }else{
+         n <- n
+        }
+      }
+    }else{
+      n <- 0
+    }
+    prob[it] <- (1/(n+1))*prob[it]
+    it <- it+1
+  }
+  theta <- sample(ori,1,prob = prob/360)
   }
   if(is.na(theta) == T){
     m$location[1] <- m$location[1]

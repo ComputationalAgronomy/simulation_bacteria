@@ -1,16 +1,38 @@
-## calculate the density of each microbe's around.
-density <- function(m,x,y,radius){
-   n1 <- n2 <- n3 <- n4 <- distance <- vector("numeric")
+## calculate the distance of each microbe's around.
+distance.table <- function(m,n){
+  distance <- matrix(NA,length(m),length(m)-1) 
    for(i in 1:length(m)){
-      distance <- (x[i]-x[-i])^2+(y[i]-y[-i])^2
-      n1[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+radius & y[-i] > y[i] & y[-i] < y[i]+radius & distance<radius)
-      n2[i] <- sum(x[-i] > x[i]-radius & x[-i] < x[i] & y[-i] > y[i] & y[-i] < y[i]+radius & distance<radius)
-      n3[i] <- sum(x[-i] > x[i]-radius & x[-i] < x[i] & y[-i] > y[i]-radius & y[-i] < y[i] & distance<radius)
-      n4[i] <- sum(x[-i] > x[i] & x[-i] < x[i]+radius & y[-i] > y[i]-radius & y[-i] < y[i] & distance<radius)
+      distance[i,] <- sqrt((m[i]-m[-i])^2+(n[i]-n[-i])^2)
     }
-    density_table <- cbind(1/(n1+1),1/(n2+1),1/(n3+1),1/(n4+1))
-    return(density_table)
+    return(distance)
 }
+
+## The way to calculate the angle between two points.
+angle.cal <- function(r,m){
+  a <- r - m
+  b <- c(1,0)
+  if(m[2] >= r[2]){
+    angle <- 2*pi-(acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))))
+  }else{
+    angle <- acos(sum(a*b) / ( sqrt(sum(a * a)) * sqrt(sum(b * b)))) 
+  }
+  return(angle)
+}
+
+## calculate the angel of each individual to another.
+angle.table <- function(x,y){
+  loc <- cbind(x,y)
+  dist <- matrix(NA,length(x),length(x)-1)
+  j <- 1
+  while(j <= length(x)){
+    for(i in 1:(length(x)-1)){
+      dist[j,i] <- angle.cal(loc[-j,][i,],loc[j,])
+    }
+    j <- j+1
+  }
+  return(dist)
+}
+
 
 general_movement <- function(n,t,boundary,radius){
   general_list <- lapply(1:n, function(x){
@@ -25,10 +47,14 @@ general_movement <- function(n,t,boundary,radius){
     }
     inside <- which(abs(x)<=boundary & abs(y)<=boundary)
     general_list <- general_list[inside] 
+    x <- x[inside]
+    y <- y[inside]
+    distance_tab <- distance.table(x,y)
+    angle_tab <- angle.table(x,y)
     if(length(general_list) > 0){
-      microbe_density <- density(general_list,x,y,radius)
       general_list <- lapply(seq_along(general_list), 
-                                function(k){move(general_list[[k]],microbe_density[k,])})
+                                function(k){move(general_list[[k]],distance_tab[k,],
+                                                 angle_tab[k,],radius)})
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break
@@ -58,9 +84,11 @@ while(iter<=t){
   if(length(background_list) > 0){
   x <- x[inside]
   y <- y[inside]
-  microbe_density <- density(background_list,x,y,radius)
+  angle_tab <- angle.table(x,y)
+  distance_tab <- distance.table(x,y)
   background_list <- lapply(seq_along(background_list), 
-                            function(k){move(background_list[[k]],microbe_density[k,],resource)})
+                            function(k){move(background_list[[k]],distance_tab[k,],
+                                             angle_tab[k,],radius,resource)})
   
   }else{
     print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
@@ -97,9 +125,11 @@ background_simulation <- function(n,t,boundary,radius,resource,
     if(length(background_list) > 0){
       x <- x[inside]
       y <- y[inside]
-      microbe_density <- density(background_list,x,y,radius)
+      angle_tab <- angle.table(x,y)
+      distance_tab <- distance.table(x,y)
       background_list <- lapply(seq_along(background_list), 
-                                function(k){move(background_list[[k]],microbe_density[k,],resource)})
+                                function(k){move(background_list[[k]],distance_tab[k,],
+                                                 angle_tab[k,],radius,resource)})
       
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
@@ -120,3 +150,4 @@ background_simulation <- function(n,t,boundary,radius,resource,
   }
   return(loc_print.microbe(background_list))
   }
+
