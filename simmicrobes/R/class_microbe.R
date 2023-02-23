@@ -76,10 +76,10 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
   angle <- angle.cal(resource,m$location)
   ori <- seq(pi/180,2*pi,pi/180)
   prob <- dnorm(ori,angle,0.5)
-  n <- 0
-  angle_modify <- vector()
   it <- 1
   while(it <= length(ori)){
+    n <- 0
+    angle_modify <- vector()
     angle_ins <- angle_table[which(distance_table <= radius)]
     if(length(angle_ins) > 0){
     angle_modify <- angle_ins - ori[it]
@@ -89,8 +89,10 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
       }else{
         angle_modify[i] <- angle_modify[i]
       }
-    if(angle_modify[i] < pi/12 | angle_modify[i] > 11*pi/12){
+    if(angle_modify[i] <= pi/12 | angle_modify[i] >= 23*pi/12){
       n <- n+1
+    }else{
+      n <- n
     }
     }
     }else{
@@ -99,7 +101,7 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
     prob[it] <- (1/(n+1))*prob[it]
     it <- it+1
   }
-   theta <- sample(ori,1,prob = prob)
+   theta <- sample(ori,1,prob = prob/360)
   }
  
   if(is.na(theta) == T){
