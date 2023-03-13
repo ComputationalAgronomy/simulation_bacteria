@@ -45,7 +45,7 @@ loc_time_print.microbe <- function(m,id,time){
 ## st_birth,turning_point,b,c: parameters of birth.
 ## st_death,d: parameters of death.
 ## ex:Generate and export a table with initial 100 individuals for 100 iterations.
-microbe_generate <- function(n,t,st_birth,turning_point,b,c,st_death,d){
+microbe_generate <- function(n,t,st_birth,birth_rate,st_death,death_rate){
 microbe_list <- lapply(1:n, function(x){
   new_microbe(speed = runif(1,1,5), location=c(runif(1,0,10),runif(1,0,10)))
 })
@@ -54,11 +54,10 @@ microbe_table <- vector("list")
 iter <- 1
 while(iter <= t){
   microbe_list <- lapply(microbe_list,age)
-  microbe_list <- lapply(microbe_list, move)
-  logic <- lapply(microbe_list,death,st_death,d)
+  logic <- lapply(microbe_list,death,st_death,death_rate)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
-  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,turning_point,b,c))
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,birth_rate))
   microbe_list <- microbe_list[!is.na(microbe_list)]
   id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")  
   l <- length(microbe_list)

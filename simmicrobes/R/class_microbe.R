@@ -52,14 +52,9 @@ summary.microbe <- function(m){
 print.microbe <- function(m){
   summary(m)
 }
-# Note: These two methods summary and print, already have generic method setup.
-# Therefore we can call summary(m), print(m)
 
-
-## Background microbes has a preference to move (0,90d)
-## Movement is also influenced by the density of microbes in 4 directions.
 #' @export
-move <- function(m,distance,angle,radius,resource){
+move <- function(m,distance,angle,sd,radius,arc,ec,resource){
    UseMethod("move")
 }
 
@@ -68,14 +63,14 @@ library(raster)
 ## resource should be a point, such as c(5,5)
 #' @export
 
-move.background <- function(m,distance_table,angle_table,radius,resource){
+move.background <- function(m,distance_table,angle_table,sd,radius,arc,ec,resource){
   p <- runif(1,0,1)
   if(p < 0.1){
     theta <- NA
   }else{
   angle <- angle.cal(resource,m$location)
   ori <- seq(pi/180,2*pi,pi/180)
-  prob <- dnorm(ori,angle,0.5)
+  prob <- dnorm(ori,angle,sd)
   it <- 1
   while(it <= length(ori)){
     n <- 0
@@ -89,7 +84,7 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
       }else{
         angle_modify[i] <- angle_modify[i]
       }
-    if(angle_modify[i] <= pi/12 | angle_modify[i] >= 23*pi/12){
+    if(angle_modify[i] <= arc | angle_modify[i] >= 2*pi-arc){
       n <- n+1
     }else{
       n <- n
@@ -98,7 +93,7 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
     }else{
       n <- 0
     }
-    prob[it] <- (1/(n+1))*prob[it]
+    prob[it] <- (1/(ec^n))*prob[it]
     it <- it+1
   }
    theta <- sample(ori,1,prob = prob/360)
@@ -116,7 +111,7 @@ move.background <- function(m,distance_table,angle_table,radius,resource){
 
 ## if no preference involved.
 #' @export
-move.general <- function(m,distance_table,angle_table,radius,resource = NA){
+move.general <- function(m,distance_table,angle_table,sd = NA,radius,arc,ec,resource = NA){
   p <- runif(1,0,1)
   if(p < 0.1){
     theta <- NA
@@ -137,7 +132,7 @@ move.general <- function(m,distance_table,angle_table,radius,resource = NA){
         }else{
           angle_modify[i] <- angle_modify[i]
         }
-        if(angle_modify[i] <= pi/12 | angle_modify[i] >= 23*pi/12){
+        if(angle_modify[i] <= arc | angle_modify[i] >= 2*pi-arc){
           n <- n+1
         }else{
          n <- n
@@ -146,7 +141,7 @@ move.general <- function(m,distance_table,angle_table,radius,resource = NA){
     }else{
       n <- 0
     }
-    prob[it] <- (1/(n+1))*prob[it]
+    prob[it] <- (1/(ec^n))*prob[it]
     it <- it+1
   }
   theta <- sample(ori,1,prob = prob/360)

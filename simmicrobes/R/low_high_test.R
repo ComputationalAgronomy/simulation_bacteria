@@ -4,7 +4,7 @@
 ## Initial population and iterations are fixed. 
 ## Ignore movement here.
 
-microbe_test <-  function(n,t,st_birth,turning_point,b,c,st_death,d){
+microbe_test <-  function(n,t,st_birth,birth_rate,st_death,death_rate){
   microbe_list <- lapply(1:n, function(x){
     new_microbe(speed = runif(1,1,5), location=c(0,0))
   })
@@ -13,9 +13,9 @@ microbe_test <-  function(n,t,st_birth,turning_point,b,c,st_death,d){
   iter <- 1
   while(iter <= t){
   microbe_list <- lapply(microbe_list,age)
-  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,turning_point,b,c))
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,birth_rate))
   microbe_list <- microbe_list[!is.na(microbe_list)]
-  logic <- lapply(microbe_list,death,st_death,d)
+  logic <- lapply(microbe_list,death,st_death,death_rate)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
   id <- old <- amount <- average_age <- vector("numeric")

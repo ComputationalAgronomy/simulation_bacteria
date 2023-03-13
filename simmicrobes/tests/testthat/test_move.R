@@ -3,7 +3,7 @@ test_that("if the resource factor makes sense",{
   iter <- 1
   angle <- vector("numeric")
   while(iter <= 10000){
-    loc <-  move.background(back,c(0),c(0),-1,c(0,1))$location
+    loc <-  move.background(back,c(0),c(0),0.5,-1,pi/12,1,c(0,1))$location
     angle[iter] <- angle.cal(loc,c(0,0))
     iter <- iter+1
   }
@@ -26,7 +26,8 @@ test_that("if the density factor makes sense",{
   angle <- vector("numeric")
   iter <- 1
   while(iter <= 10000){
-    angle[iter] <- angle.cal(move.general(microbe_list[[1]],distance_table[1,],angle_table[1,],2)$location,c(0,0))
+    angle[iter] <- angle.cal(move.general(microbe_list[[1]],distance_table[1,],angle_table[1,],2,
+                                          pi/12,1)$location,c(0,0))
     iter <- iter+1
   }
   expect_equal(c(mean(angle <= pi/3 & angle >= pi/6, na.rm = T),mean(angle <= 7*pi/12 & angle >= 5*pi/12, na.rm = T)
@@ -41,16 +42,17 @@ test_that("if the density factor makes sense",{
   background_list[[1]]$location <- c(0,0)
   background_list[[3]]$location <- c(0,1)
   x <- y <- vector("numeric")
-  for(i in 1:length(microbe_list)){
-    x[i] <- microbe_list[[i]]$location[1]
-    y[i] <- microbe_list[[i]]$location[2]
+  for(i in 1:length(background_list)){
+    x[i] <- background_list[[i]]$location[1]
+    y[i] <- background_list[[i]]$location[2]
   }
   distance_table <- distance.table(x,y)
   angle_table <- angle.table(x,y)
   angle <- vector("numeric")
   iter <- 1
   while(iter <= 10000){
-    angle[iter] <- angle.cal(move.background(microbe_list[[1]],distance_table[1,],angle_table[1,],2,c(2,2))$location,c(0,0))
+    angle[iter] <- angle.cal(move.background(background_list[[1]],distance_table[1,],angle_table[1,],0.5,2,pi/12,
+                                             1,c(2,2))$location,c(0,0))
     iter <- iter+1
   }
   

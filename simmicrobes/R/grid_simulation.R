@@ -34,7 +34,7 @@ angle.table <- function(x,y){
 }
 
 
-general_movement <- function(n,t,boundary,radius){
+general_movement <- function(n,t,boundary,radius,arc,ec){
   general_list <- lapply(1:n, function(x){
     new_microbe(speed = runif(1,0,1), location=c(runif(1,0,2),runif(1,0,2)))
   })
@@ -54,7 +54,7 @@ general_movement <- function(n,t,boundary,radius){
     if(length(general_list) > 0){
       general_list <- lapply(seq_along(general_list), 
                                 function(k){move(general_list[[k]],distance_tab[k,],
-                                                 angle_tab[k,],radius)})
+                                                 angle_tab[k,],radius,arc,ec)})
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break
@@ -68,7 +68,7 @@ general_movement <- function(n,t,boundary,radius){
 ## n:initial population, which will be the same through the simulation here.
 ## speed is set (0,1), radius is set (0,1)
 ## background_movement(100,100,10,1)
-background_movement <- function(n,t,boundary,radius,resource){
+background_movement <- function(n,t,boundary,sd,radius,arc,ec,resource){
   background_list <- lapply(1:n, function(x){
     background_microbe(speed = runif(1,0,1), location=c(runif(1,-1,1),runif(1,-1,1)))
   })
@@ -88,7 +88,7 @@ while(iter<=t){
   distance_tab <- distance.table(x,y)
   background_list <- lapply(seq_along(background_list), 
                             function(k){move(background_list[[k]],distance_tab[k,],
-                                             angle_tab[k,],radius,resource)})
+                                             angle_tab[k,],sd,radius,arc,ec,resource)})
   
   }else{
     print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
@@ -105,8 +105,8 @@ while(iter<=t){
 ## boundary,once a microbe moves out of the boundary,it will die.
 ## st_birth,turning point,b,c are parameters set for birth,which have been introduced in birth function
 ## st_death,d are parameters set for death.
-background_simulation <- function(n,t,boundary,radius,resource,
-                                  st_birth,turning_point,birth_r1,birth_r2,st_death,death_r){
+background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
+                                  st_birth,birth_rate,st_death,death_rate){
   background_list <- lapply(1:n, function(x){
     background_microbe(speed = runif(1,0,1), location=c(runif(1,0,5),runif(1,0,5)))
   })
@@ -129,17 +129,17 @@ background_simulation <- function(n,t,boundary,radius,resource,
       distance_tab <- distance.table(x,y)
       background_list <- lapply(seq_along(background_list), 
                                 function(k){move(background_list[[k]],distance_tab[k,],
-                                                 angle_tab[k,],radius,resource)})
+                                                 angle_tab[k,],sd,radius,arc,ec,resource)})
       
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break
     }
 ## Birth
-    background_list <- c(background_list,lapply(background_list,birth,st_birth,turning_point,birth_r1,birth_r2))
+    background_list <- c(background_list,lapply(background_list,birth,st_birth,birth_rate))
     background_list <- background_list[!is.na(background_list)]
 ## Death 
-    logic <- lapply(background_list,death,st_death,death_r)
+    logic <- lapply(background_list,death,st_death,death_rate)
     survive <- which(logic == "True")
     background_list <- background_list[survive]
     if(length(background_list)==0){
