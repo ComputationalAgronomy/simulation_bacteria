@@ -6,10 +6,10 @@
 ## capacity: largest number of agents could be held in environment
 ## st_birth/death: age start to reproducing/dying
 
-death.microbe <- function(m,st_death,birth_rate,population,capacity){
+death.microbe <- function(m,st_death,death_rate,population,capacity){
   if (m$age > st_death){
   p <- runif(1,0,1)
-  rate <- birth_rate*(population/capacity)
+  rate <- death_rate*(population/capacity)
   if(rate < p){
     return("True")
   }else{
@@ -21,7 +21,7 @@ death.microbe <- function(m,st_death,birth_rate,population,capacity){
 }
 
 #' @export
-death <- function(m,st_death,birth_rate,population,capacity){
+death <- function(m,st_death,death_rate,population,capacity){
   UseMethod("death")
 }
 

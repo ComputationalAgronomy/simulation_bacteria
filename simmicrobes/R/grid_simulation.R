@@ -98,7 +98,7 @@ while(iter<=t){
 
 
 background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
-                                  st_birth,birth_rate,st_death,capacity){
+                                  st_birth,birth_rate,st_death,death_rate,capacity){
   background_list <- lapply(1:n, function(x){
     background_microbe(speed = runif(1,0,1), location=c(runif(1,0,5),runif(1,0,5)))
   })
@@ -133,7 +133,7 @@ background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
     background_list <- background_list[!is.na(background_list)]
 ## Death 
     pop <- length(background_list)
-    logic <- lapply(background_list,death,st_death,birth_rate,pop,capapcity)
+    logic <- lapply(background_list,death,st_death,death_rate,pop,capapcity)
     survive <- which(logic == "True")
     background_list <- background_list[survive]
     if(length(background_list)==0){
