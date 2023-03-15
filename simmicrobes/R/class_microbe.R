@@ -35,12 +35,6 @@ background_microbe <- function(speed = double(), location=c(0,0),parent = NA){
     static_env$id <- static_env$id  + 1
     return(microbe)
 }
-# validate_microbe <- function(x){
-#   # TODO: validator method
-# }
-# microbe <- function(x){
-#   # TODO: Helper method
-# }
 
 #' @export
 summary.microbe <- function(m){

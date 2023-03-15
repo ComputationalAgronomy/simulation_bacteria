@@ -64,10 +64,7 @@ general_movement <- function(n,t,boundary,radius,arc,ec){
   return(loc_print.microbe(general_list))
 }
 
-## Consider movement only first. 
-## n:initial population, which will be the same through the simulation here.
-## speed is set (0,1), radius is set (0,1)
-## background_movement(100,100,10,1)
+
 background_movement <- function(n,t,boundary,sd,radius,arc,ec,resource){
   background_list <- lapply(1:n, function(x){
     background_microbe(speed = runif(1,0,1), location=c(runif(1,-1,1),runif(1,-1,1)))
@@ -99,14 +96,9 @@ while(iter<=t){
   return(loc_print.microbe(background_list))
 }
 
-## Take age,birth and death into account
-## n = initial population
-## t = iteration 
-## boundary,once a microbe moves out of the boundary,it will die.
-## st_birth,turning point,b,c are parameters set for birth,which have been introduced in birth function
-## st_death,d are parameters set for death.
+
 background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
-                                  st_birth,birth_rate,st_death,death_rate){
+                                  st_birth,birth_rate,st_death,capacity){
   background_list <- lapply(1:n, function(x){
     background_microbe(speed = runif(1,0,1), location=c(runif(1,0,5),runif(1,0,5)))
   })
@@ -136,10 +128,12 @@ background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
       break
     }
 ## Birth
-    background_list <- c(background_list,lapply(background_list,birth,st_birth,birth_rate))
+    pop <- length(background_list)
+    background_list <- c(background_list,lapply(background_list,birth,st_birth,birth_rate,pop,capacity))
     background_list <- background_list[!is.na(background_list)]
 ## Death 
-    logic <- lapply(background_list,death,st_death,death_rate)
+    pop <- length(background_list)
+    logic <- lapply(background_list,death,st_death,birth_rate,pop,capapcity)
     survive <- which(logic == "True")
     background_list <- background_list[survive]
     if(length(background_list)==0){

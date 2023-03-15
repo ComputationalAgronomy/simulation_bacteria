@@ -17,7 +17,7 @@ test_that("if the death rate is 0 under age 30",{
 })
 
 
-test_that("if the death rate fits a exp(-death_rate/m$age) model", {
+test_that("if the death rate fits the model", {
   microbe_list <- lapply(1:10, function(x){
     new_microbe(speed = runif(1, 1, 5), location=c(0,0))
   })
@@ -29,11 +29,11 @@ test_that("if the death rate fits a exp(-death_rate/m$age) model", {
   i <- 1
   a <- vector("numeric")
   while (i <= 1000) {
-    logic <- lapply(microbe_list, death,st_death=30,death_rate = 1)
+    logic <- lapply(microbe_list, death,st_death=30,0.8,10,20)
     a[i] <- sum(logic == "False")
     i <- i + 1
   }
   death_rate <- mean(a)/10
   
-  expect_equal(death_rate, exp(-1/5), tolerance = 0.05)
+  expect_equal(death_rate, 0.4 , tolerance = 0.05)
 })

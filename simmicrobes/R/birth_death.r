@@ -1,13 +1,15 @@
 #' @importFrom stats dexp runif
 #' @export
 ## "True" means alive, "False" means dead. 
-## st_death: the age microbes begin to die.
-## d_r: the parameter of death rate. d_r > 0, the smaller d_r, the higher death rate is.
-## Due to the model,death rate will never reach 1. 
-death.microbe <- function(m,st_death,death_rate){
+## birth_rate:intrinsic growth rate of an agent
+## population: number of agents
+## capacity: largest number of agents could be held in environment
+## st_birth/death: age start to reproducing/dying
+
+death.microbe <- function(m,st_death,birth_rate,population,capacity){
   if (m$age > st_death){
   p <- runif(1,0,1)
-  rate <- exp(-death_rate/(m$age-st_death))
+  rate <- birth_rate*(population/capacity)
   if(rate < p){
     return("True")
   }else{
@@ -19,21 +21,19 @@ death.microbe <- function(m,st_death,death_rate){
 }
 
 #' @export
-death <- function(m,st_death,death_rate){
+death <- function(m,st_death,birth_rate,population,capacity){
   UseMethod("death")
 }
 
 #' @export
 
-## Assume birth rate is constant after an age. 
-## st_birth is the age that microbes start to give birth.
-## parameter b_r controls the increasing rate.
-birth.microbe <- function(m,st_birth,birth_rate){
+birth.microbe <- function(m,st_birth,birth_rate,population,capacity){
     if(m$age < st_birth){
       n <- NA
     }else{
     p <- runif(1,0,1)
-    if(birth_rate > p){
+    rate <- birth_rate*(1-population/capacity)
+    if(rate > p){
       n <- new_microbe(speed = runif(1,0,1), location=c(m$location[1]+0.1,m$location[2]+0.1),parent = m$id)
     }else{
       n <- NA
@@ -45,6 +45,6 @@ birth.microbe <- function(m,st_birth,birth_rate){
   
 
 #' @export
-birth <- function(m,st_birth,birth_rate){
+birth <- function(m,st_birth,birth_rate,population,capacity){
   UseMethod("birth")
 } 
