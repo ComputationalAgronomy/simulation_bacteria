@@ -29,11 +29,11 @@ test_that("if the death rate fits the model", {
   i <- 1
   a <- vector("numeric")
   while (i <= 1000) {
-    logic <- lapply(microbe_list, death,st_death=30,0.8,10,20)
+    logic <- lapply(microbe_list,death,st_death=30,0.8,10,40)
     a[i] <- sum(logic == "False")
     i <- i + 1
   }
   death_rate <- mean(a)/10
   
-  expect_equal(death_rate, 0.4 , tolerance = 0.05)
+  expect_equal(death_rate, 0.2 , tolerance = 0.05)
 })

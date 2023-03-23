@@ -26,7 +26,7 @@ test_that("if the density factor makes sense",{
   angle <- vector("numeric")
   iter <- 1
   while(iter <= 10000){
-    angle[iter] <- angle.cal(move.general(microbe_list[[1]],distance_table[1,],angle_table[1,],2,
+    angle[iter] <- angle.cal(move.general(microbe_list[[1]],distance_table[1,],angle_table[1,],sd = NA,2,
                                           pi/12,1)$location,c(0,0))
     iter <- iter+1
   }

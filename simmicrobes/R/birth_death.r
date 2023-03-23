@@ -9,7 +9,8 @@
 death.microbe <- function(m,st_death,death_rate,population,capacity){
   if (m$age > st_death){
   p <- runif(1,0,1)
-  rate <- death_rate*(population/capacity)
+  death <-  death_rate/(1+exp(-m$age^2))
+  rate <- death*(population/capacity)
   if(rate < p){
     return("True")
   }else{

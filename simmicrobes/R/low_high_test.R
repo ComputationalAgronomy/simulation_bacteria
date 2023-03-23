@@ -40,6 +40,14 @@ microbe_test <-  function(n,t,st_birth,birth_rate,st_death,death_rate,capacity){
   return(table)
 }
 
+logistic_curve_1 <- function(x, r, K, N0) {
+  Nt <- K / (1 + ((K - N0) / N0) * exp(-r * x))
+  plot(x, Nt, type = "l", xlab = "Time", ylab = "Population Size")
+  mt <- microbe_test(100,20,1,0.5,1,0.1,500)
+  lines(1:20,mt[,1],type = 'l', col = 'blue')
+  legend("topleft",legend = c("empirical","simulated"),col=c("black","blue"),lty=c(1,1))
+}
+## logistic_curve_1(1:20,0.4,500,100)
 
 ## n = initial population 
 ## t = iteration(age)
