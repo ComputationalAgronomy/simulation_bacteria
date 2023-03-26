@@ -40,53 +40,70 @@ microbe_test <-  function(n,t,st_birth,birth_rate,st_death,death_rate,capacity){
   return(table)
 }
 
-logistic_curve_1 <- function(x, r, K, N0) {
+logistic_curve <- function(x, r, K, N0) {
   Nt <- K / (1 + ((K - N0) / N0) * exp(-r * x))
-  plot(x, Nt, type = "l", xlab = "Time", ylab = "Population Size")
-  mt <- microbe_test(100,20,1,0.5,1,0.1,500)
-  lines(1:20,mt[,1],type = 'l', col = 'blue')
-  legend("topleft",legend = c("empirical","simulated"),col=c("black","blue"),lty=c(1,1))
+  plot(x, Nt, type = 'l', xlab = "Time", ylab = "Population Size",lty = 1,lwd = 5)
+  iter <- 1
+  while(iter < 10){
+  mt <- microbe_test(100,30,1,0.5,1,0,1000)
+  lines(1:30,mt[,1],type = 'l', col = 'lightblue',lty = 1,lwd = 2)
+  iter <- iter+1
+  }
+  lines(x, Nt, type = 'l',lty = 1,lwd = 5)
+  legend("topleft",legend = c("Theoretical","Simulated"),col=c("black","lightblue"),lty=c(1,1))
 }
-## logistic_curve_1(1:20,0.4,500,100)
+
+## logistic_curve(1:30,0.5,1000,100)
+
+
 
 ## n = initial population 
 ## t = iteration(age)
 ## r = replication
-amount_test <- function(n,t,r){
-par(mfrow=c(1,3))
-low_low_test <- vector("list")
-low_low_amount <- low_low_age <- matrix(0,t,r)
-for(i in 1:r){
-  low_low_test[[i]] <- microbe_test(n,t,1,0.2,1,1000)
-  low_low_amount[,i] <- low_low_test[[i]][,1]
-}
-low_low_mean_amount <- apply(low_low_amount,1,mean)
-plot(1:t,low_low_mean_amount,type = 'l',lwd=2,ylim = c((1/2)*(min(low_low_mean_amount)),max(low_low_mean_amount)),
-     xlab = 'age',ylab = 'population',main = 'low birth rate')
 
-low_median_test <- vector("list")
-low_median_amount <- matrix(0,t,r)
-for(i in 1:r){
-  low_median_test[[i]] <- microbe_test(n,t,n,t,1,0.5,1,1000)
-  for(j in 1:length(low_median_test[[i]][,1])){
-    low_median_amount[j,i] <- low_median_test[[i]][,1][j]
-  }
-}
-low_median_mean_amount <- apply(low_median_amount,1,mean)
-plot(1:t,low_median_mean_amount,type = 'l',lwd=2,ylim = c(0,max(low_median_mean_amount)),
-     xlab = 'age',ylab = 'population',main = 'median birth rate')
-
-low_high_test <- vector("list")
-low_high_amount <- matrix(0,t,r)
-for(i in 1:r){
-  low_high_test[[i]] <- microbe_test(n,t,1,0.8,1,1000)
-  for(j in 1:length(low_high_test[[i]][,1])){
-    low_high_amount[j,i] <- low_high_test[[i]][,1][j]
-  }
-}
-low_high_mean_amount <- apply(low_high_amount,1,mean)
-plot(1:t,low_high_mean_amount,type = 'l',lwd=2,ylim = c(0,max(low_high_mean_amount)),
-     xlab = 'age',ylab = 'amount',main = 'high birth test')
+amount_test <- function(n,t){
+par(mfrow=c(3,3))
+t11 <- microbe_test(n,t,1,0.1,1,0.1,1000)
+plot(1:t,t11[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.1,d = 0.1")
+t12 <- microbe_test(n,t,1,0.5,1,0.1,1000)
+plot(1:t,t12[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.5,d = 0.1")
+t13 <- microbe_test(n,t,1,0.9,1,0.1,1000)
+plot(1:t,t13[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.9,d = 0.1")
+t21 <- microbe_test(n,t,1,0.1,1,0.5,1000)
+plot(1:t,t21[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.1,d = 0.5")
+t22 <- microbe_test(n,t,1,0.5,1,0.5,1000)
+plot(1:t,t22[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.5,d = 0.5")
+t23 <- microbe_test(n,t,1,0.9,1,0.5,1000)
+plot(1:t,t23[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.9,d = 0.5")
+t31 <- microbe_test(n,t,1,0.1,1,0.9,1000)
+plot(1:t,t31[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.1,d = 0.9")
+t32 <- microbe_test(n,t,1,0.5,1,0.9,1000)
+plot(1:t,t32[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.5,d = 0.9")
+t33 <- microbe_test(n,t,1,0.9,1,0.9,1000)
+plot(1:t,t33[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
+     main="b = 0.9,d = 0.9")
 par(mfrow=c(1,1))
 }
+
+Lag_test <- function(n,t = 30){
+  m1 <- microbe_test(n,t,1,0.5,1,0.5,1000)
+  plot(1:t,m1[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000))
+  m2 <- microbe_test(n,t,2,0.5,1,0.5,1000)
+  lines(1:30,m2[,1],lwd=2,col = 'blue')
+  m3 <- microbe_test(n,t,1,0.5,2,0.5,1000)
+  lines(1:30,m3[,1],lwd=2,col = 'red')
+  legend("topleft",legend = c("Normal","Lag in birth","Lag in death"),lty=c(1,1,1),col=c("black","blue","red"))
+}
+
+
+
+
 

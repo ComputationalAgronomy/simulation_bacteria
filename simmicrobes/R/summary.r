@@ -20,14 +20,15 @@ age_print.microbe <- function(m){
 } 
 
 ## Get the location of all the microbes.
-loc_print.microbe <- function(m){
+loc_print.microbe <- function(m, title){
   a <- b <- vector("numeric")
   for(i in 1:length(m)){
     a[i] <- c(m[[i]]$location[1])
     b[i] <- c(m[[i]]$location[2])
     c <- cbind(a,b)
   }
-  plot(c,main="all_microbe distribution",xlab="X",ylab="Y",cex=0.5,pch=18)
+  plot(c,xlim = c(-5,6),ylim = c(-5,6),main = title,xlab="X",ylab="Y",cex=0.5,pch=18)
+  points(5,5,col = "blue")
 } 
 
 ## Track the location of an individual. 
@@ -36,9 +37,8 @@ loc_time_print.microbe <- function(m,id,time){
   for(i in 1:time){
     a[i] <- c(m[[i]][[id]]$location[1])
     b[i] <- c(m[[i]][[id]]$location[2])
-    c <- cbind(a,b)
   } 
-  return(plot(c,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
+  return(plot(a,b,main="age-loc distribution",xlab="X",ylab="Y",cex=0.5,pch=18))
 } 
 
 

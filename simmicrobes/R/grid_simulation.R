@@ -34,9 +34,9 @@ angle.table <- function(x,y){
 }
 
 
-general_movement <- function(n,t,boundary,radius,arc,ec){
+general_movement <- function(n,t,boundary,sd = NA,radius,arc,ec){
   general_list <- lapply(1:n, function(x){
-    new_microbe(speed = runif(1,0,1), location=c(runif(1,0,2),runif(1,0,2)))
+    new_microbe(speed = runif(1,0,1), location=c(runif(1,-1,1),runif(1,-1,1)))
   })
   iter <- 1
   while(iter<=t){
@@ -54,14 +54,14 @@ general_movement <- function(n,t,boundary,radius,arc,ec){
     if(length(general_list) > 0){
       general_list <- lapply(seq_along(general_list), 
                                 function(k){move(general_list[[k]],distance_tab[k,],
-                                                 angle_tab[k,],radius,arc,ec)})
+                                                 angle_tab[k,],sd = NA,radius,arc,ec)})
     }else{
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break
     }
     iter <- iter+1
   }
-  return(loc_print.microbe(general_list))
+  return(general_list)
 }
 
 
@@ -93,7 +93,7 @@ while(iter<=t){
   }
   iter <- iter+1
   }
-  return(loc_print.microbe(background_list))
+  return(background_list)
 }
 
 
@@ -142,6 +142,6 @@ background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
     }
     iter <- iter+1
   }
-  return(loc_print.microbe(background_list))
+  return(background_list)
   }
 
