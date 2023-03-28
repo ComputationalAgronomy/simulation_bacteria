@@ -64,7 +64,16 @@ move.background <- function(m,distance_table,angle_table,sd,radius,arc,ec,resour
   }else{
   angle <- angle.cal(resource,m$location)
   ori <- seq(pi/180,2*pi,pi/180)
+  for(i in 1:360){
+    if(ori[i]-angle >= pi){
+      ori[i] <- ori[i] - 2*pi
+    }
+    if(ori[i]-angle <= -pi){
+      ori[i] <- ori[i] + 2*pi
+    }
+  }
   prob <- dnorm(ori,angle,sd)
+  ori <- seq(pi/180,2*pi,pi/180)
   it <- 1
   while(it <= length(ori)){
     n <- 0
