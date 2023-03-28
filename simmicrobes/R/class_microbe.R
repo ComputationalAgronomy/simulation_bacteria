@@ -74,34 +74,27 @@ move.background <- function(m,distance_table,angle_table,sd,radius,arc,ec,resour
   }
   prob <- dnorm(ori,angle,sd)
   ori <- seq(pi/180,2*pi,pi/180)
-  it <- 1
-  while(it <= length(ori)){
-    n <- 0
-    angle_modify <- vector()
-    angle_ins <- angle_table[which(distance_table <= radius)]
-    if(length(angle_ins) > 0){
-    angle_modify <- angle_ins - ori[it]
-    for(i in 1:length(angle_modify)){
-      if (angle_modify[i] < 0){
-        angle_modify[i] <- angle_modify[i]+2*pi
-      }else{
-        angle_modify[i] <- angle_modify[i]
+  angle_ins <- angle_table[which(distance_table <= radius)]
+  if(length(angle_ins) > 0){
+    ag <- list()
+    for(i in 1:length(angle_ins)){
+      ag[[i]] <- seq(angle_ins[i]-arc,angle_ins[i]+arc,pi/180)
+    }
+    ag <- unlist(ag)
+    for(i in 1:length(ag)){
+      if(ag[i] <= 0){
+        ag[i] <- ag[i]+2*pi
       }
-    if(angle_modify[i] <= arc | angle_modify[i] >= 2*pi-arc){
-      n <- n+1
-    }else{
-      n <- n
+      if(ag[i] > 2*pi){
+        ag[i] <- ag[i]-2*pi
+      }
+      prob[which(abs(ori-ag[i]) < 0.001)] <- prob[which(abs(ori-ag[i]) < 0.001)]/ec
     }
-    }
-    }else{
-      n <- 0
-    }
-    prob[it] <- (1/(ec^n))*prob[it]
-    it <- it+1
+    theta <- sample(ori,1,prob = prob)
+  }else{
+    theta <- sample(ori,1,prob = prob)
   }
-   theta <- sample(ori,1,prob = prob/360)
   }
- 
   if(is.na(theta) == T){
     m$location[1] <- m$location[1]
     m$location[2] <- m$location[2]
@@ -121,33 +114,26 @@ move.general <- function(m,distance_table,angle_table,sd = NA,radius,arc,ec,reso
   }else{
   ori <- seq(pi/180,2*pi,pi/180)
   prob <- rep(1,360)
-  it <- 1
-  while(it <= length(ori)){
-    n <- 0
-    angle_modify <- vector()
-    angle_ins <- angle_table[which(distance_table <= radius)]
-    if(length(angle_ins) > 0){
-      angle_modify <- ori[it] - angle_ins
-      
-      for(i in 1:length(angle_modify)){
-        if (angle_modify[i] < 0){
-          angle_modify[i] <- angle_modify[i]+2*pi
-        }else{
-          angle_modify[i] <- angle_modify[i]
-        }
-        if(angle_modify[i] <= arc | angle_modify[i] >= 2*pi-arc){
-          n <- n+1
-        }else{
-         n <- n
-        }
-      }
-    }else{
-      n <- 0
-    }
-    prob[it] <- (1/(ec^n))*prob[it]
-    it <- it+1
+  angle_ins <- angle_table[which(distance_table <= radius)]
+  if(length(angle_ins) > 0){
+  ag <- list()
+  for(i in 1:length(angle_ins)){
+    ag[[i]] <- seq(angle_ins[i]-arc,angle_ins[i]+arc,pi/180)
   }
-  theta <- sample(ori,1,prob = prob/360)
+  ag <- unlist(ag)
+  for(i in 1:length(ag)){
+    if(ag[i] <= 0){
+      ag[i] <- ag[i]+2*pi
+    }
+    if(ag[i] > 2*pi){
+      ag[i] <- ag[i]-2*pi
+    }
+    prob[which(abs(ori-ag[i]) < 0.001)] <- prob[which(abs(ori-ag[i]) < 0.001)]/ec
+  }
+  theta <- sample(ori,1,prob = prob)
+  }else{
+  theta <- sample(ori,1,prob = prob)
+  }
   }
   if(is.na(theta) == T){
     m$location[1] <- m$location[1]
@@ -179,10 +165,8 @@ age <- function(m){
 #   new_microbe(speed = runif(1, 1,5), location=c(0,0))
 # })
 
-# # generic function
+## generic function
 # age(microbe_list[[1]])
 # move(microbe_list[[1]])
 
 
-# microbe_list <- lapply(microbe_list, age)
-# microbe_list
