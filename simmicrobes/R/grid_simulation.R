@@ -36,7 +36,7 @@ angle.table <- function(x,y){
 
 general_movement <- function(n,t,boundary,sd = NA,radius,arc,ec){
   general_list <- lapply(1:n, function(x){
-    new_microbe(speed = 1, location=c(runif(1,-1,1),runif(1,-1,1)))
+    new_microbe(speed = 1, location=c(runif(1,-5,5),runif(1,-5,5)))
   })
   iter <- 1
   while(iter <= t){

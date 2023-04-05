@@ -153,38 +153,84 @@ check_movement <- function(n,t=100,boundary=10,sd=2,radius=0,arc=0,ec=0,resource
 }
 
 
-loc_printbig.microbe<- function(m){
+loc_printbig.microbe<- function(m,n,o){
   a <- b <- vector("numeric")
   for(i in 1:length(m)){
     a[i] <- c(m[[i]]$location[1])
     b[i] <- c(m[[i]]$location[2])
-    c <- cbind(a,b)
   }
-  plot(c,xlim = c(-15,15),ylim = c(-15,15),xlab="X",ylab="Y",cex=0.5,pch=18)
+  c <- d <- vector("numeric")
+  for(i in 1:length(n)){
+    c[i] <- c(n[[i]]$location[1])
+    d[i] <- c(n[[i]]$location[2])
+  }
+  colors <- c(rep("blue",length(a)),rep("black",length(c)))
+  x <- c(a,c)
+  y <- c(b,d)
+  plot(x,y,col = colors,pch = 20,main = o)
 } 
 
 ## set speed to 1 
-density_test_C1 <- function(n, t = 50, boundary = 20, sd = NA,radius=c(1,2),
-                            arc=c(pi/36,pi/12,pi/4),ec = 1.1){
-  par(mfrow=c(2,3))
-  iter <- 1
-  while(iter < 3){
-  for(i in 1:3){
-      loc_printbig.microbe(general_movement(n,t,boundary,sd,radius[iter],arc[i],ec))
+density_test1 <- function(sd = NA,radius,arc,ec){
+  par(mfrow=c(2,2))
+  g1 <- lapply(1:50, function(x){
+    new_microbe(speed = 1, location=c(runif(1,1,20),2.5))
+  })
+  g2 <- lapply(1:1000, function(x){
+    new_microbe(speed = 0, location=c(runif(1,1,50),runif(1,-2,2)))
+  })
+  g3 <- lapply(1:50, function(x){
+    new_microbe(speed = 1, location=c(runif(1,1,20),-2.5))
+  })
+  for(i in 1:50){
+    g1[[i]]$location[1] <- i
+    g3[[i]]$location[1] <- i
   }
+  g1 <- c(g1,g3)
+    loc_printbig.microbe(g1,g2,"Age = 0")
+  iter <- 1
+  while(iter < 5){
+    x <- y <- vector("numeric")
+    for(i in 1:length(g1)){
+      x[i] <- g1[[i]]$location[1]
+      y[i] <- g1[[i]]$location[2]
+    }
+      angle_tab <- angle.table(x,y)
+      distance_tab <- distance.table(x,y)
+      g1 <- lapply(seq_along(g1), function(k){move(g1[[k]],distance_tab[k,],
+                                                   angle_tab[k,],sd,radius,arc,ec)})
+      iter <- iter+1
+  }
+  loc_printbig.microbe(g1,g2,"Age = 5")
+  
+  while(iter < 10){
+    x <- y <- vector("numeric")
+    for(i in 1:length(g1)){
+      x[i] <- g1[[i]]$location[1]
+      y[i] <- g1[[i]]$location[2]
+    }
+    angle_tab <- angle.table(x,y)
+    distance_tab <- distance.table(x,y)
+    g1 <- lapply(seq_along(g1), function(k){move(g1[[k]],distance_tab[k,],
+                                                 angle_tab[k,],sd,radius,arc,ec)})
     iter <- iter+1
   }
-  par(mfrow=c(1,1))
+  loc_printbig.microbe(g1,g2,"Age = 10")
+  
+  while(iter < 15){
+    x <- y <- vector("numeric")
+    for(i in 1:length(g1)){
+      x[i] <- g1[[i]]$location[1]
+      y[i] <- g1[[i]]$location[2]
+    }
+    angle_tab <- angle.table(x,y)
+    distance_tab <- distance.table(x,y)
+    g1 <- lapply(seq_along(g1), function(k){move(g1[[k]],distance_tab[k,],
+                                                 angle_tab[k,],sd,radius,arc,ec)})
+    iter <- iter+1
+  }
+  loc_printbig.microbe(g1,g2,"Age = 15")
 }
-
-
-
-
-
-
-
-
-
 
 
 
