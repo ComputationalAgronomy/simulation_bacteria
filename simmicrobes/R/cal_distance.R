@@ -18,8 +18,8 @@ distance.table.2 <- function(m, n) {
   dist_1
 }
 
-distance.table.3 <- function(index, xy_cord, ncpu = 4) {
-  distance <- mclapply(seq_along(index), mc.cores = ncpu, function(i) {
+distance.table.3 <- function(xy_cord, index, ncpu = 4) {
+  distance <- mclapply(index, mc.cores = ncpu, function(i) {
     calculate_dist.2(i, xy_cord)
   })
   distance
@@ -34,7 +34,7 @@ time_trial_distance <- function() {
 
   system.time({
     distance <- matrix(NA, length(m), length(m) - 1)
-    for (i in 1:length(m)) {
+    for (i in seq_along(m)) {
       distance[i, ] <- sqrt((m[i] - m[-i])^2 + (n[i] - n[-i])^2)
       # distance[i, ] <- calculate_dist(i, m, n)
     }
@@ -48,13 +48,11 @@ time_trial_distance <- function() {
 
 
   system.time({
-    dist_temp <- distance.table.3(seq_len(NCOL(xy_cord)), xy_cord, ncpu = 4)
+    dist_temp <- distance.table.3(xy_cord, index = seq_len(NCOL(xy_cord)), ncpu = 4)
   })
   dist_3 <- t(simplify2array(dist_temp))
   all.equal(distance, dist_3)
+
+
 }
-
-
-
-
 

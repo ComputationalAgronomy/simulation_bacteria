@@ -28,10 +28,10 @@ angle.table.2 <- function(loc) {
 }
 
 
-angle.table.3 <- function(index, loc, ncpu = 8) {
+angle.table.3 <- function(xy_cord, index, ncpu = 8) {
   dist <- mclapply(index, mc.cores = ncpu, function(i) {
-    base <- loc[, i]
-    apply(loc[, -i], 2, function(ll) {
+    base <- xy_cord[, i]
+    apply(xy_cord[, -i], 2, function(ll) {
       angle.cal.2(ll, base)
     })
   })
@@ -58,7 +58,8 @@ time_trial_angle <- function() {
 
   xy_cord <- rbind(x, y)
   system.time({
-    angle_tab_3 <- angle.table.3(seq_len(NCOL(xy_cord)), xy_cord)
+    angle_tab_3 <- angle.table.3(xy_cord, index = seq_len(NCOL(xy_cord)))
   })
   all.equal(t(simplify2array(angle_tab_3)), angle_tab)
+  
 }
