@@ -13,11 +13,11 @@ microbe_test <-  function(n,t,st_birth,birth_rate,st_death,death_rate,capacity){
   iter <- 1
   while(iter <= t){
   microbe_list <- lapply(microbe_list,age)
-  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,birth_rate,length(microbe_list),capacity))
-  microbe_list <- microbe_list[!is.na(microbe_list)]
   logic <- lapply(microbe_list,death,st_death,death_rate,length(microbe_list),capacity)
   survive <- which(logic == "True")
   microbe_list <- microbe_list[survive]
+  microbe_list <- c(microbe_list,lapply(microbe_list,birth,st_birth,birth_rate,length(microbe_list),capacity))
+  microbe_list <- microbe_list[!is.na(microbe_list)]
   id <- old <- amount <- average_age <- vector("numeric")
   l <- length(microbe_list)
   if(l == 0){
@@ -62,7 +62,7 @@ logistic_curve <- function(x, r, K, N0) {
 ## r = replication
 
 amount_test <- function(n,t){
-par(mfrow=c(3,3))
+ par(mfrow=c(3,3))
 t11 <- microbe_test(n,t,1,0.1,1,0.1,1000)
 plot(1:t,t11[,1],type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',ylim=c(100,1000),
      main="b = 0.1,d = 0.1")
@@ -102,6 +102,38 @@ Lag_test <- function(n,t = 30){
   lines(1:30,m3[,1],lwd=2,col = 'red')
   legend("topleft",legend = c("Normal","Lag in birth","Lag in death"),lty=c(1,1,1),col=c("black","blue","red"))
 }
+
+Real_curve <- function(n,t1=40,t2=60,capacity=1000){
+  microbe_list <- lapply(1:n, function(x){
+    new_microbe(speed = runif(1,1,5), location=c(0,0))
+  })
+  l <- c()
+  iter <- 1
+  while(iter <= t1){
+    microbe_list <- lapply(microbe_list,age)
+    logic <- lapply(microbe_list,death,1,0,length(microbe_list),1000)
+    survive <- which(logic == "True")
+    microbe_list <- microbe_list[survive]
+    microbe_list <- c(microbe_list,lapply(microbe_list,birth,1,0.5,length(microbe_list),1000))
+    microbe_list <- microbe_list[!is.na(microbe_list)]
+    l[iter] <- length(microbe_list)
+    iter <- iter+1
+  }
+  while(iter <= t2){
+    microbe_list <- lapply(microbe_list,age)
+    logic <- lapply(microbe_list,death,1,0.5,length(microbe_list),1000)
+    survive <- which(logic == "True")
+    microbe_list <- microbe_list[survive]
+    if(length(microbe_list) == 0){
+      print(paste("All microbes die at i th iteration where i = ", iter))
+      break
+    }
+    l[iter] <- length(microbe_list)
+    iter <- iter+1
+  }
+  return(plot(1:t2,l,type = 'l',lwd=2,xlab = 'Time',ylab = 'Population size',
+              ylim=c(100,1000), main = "Simulated curve"))
+  }
 
 
 
