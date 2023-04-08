@@ -97,11 +97,34 @@ while(iter<=t){
 }
 
 
-background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
-                                  st_birth,birth_rate,st_death,death_rate,capacity){
-  background_list <- lapply(1:n, function(x){
-    background_microbe(speed = runif(1,0,1), location=c(runif(1,0,5),runif(1,0,5)))
-  })
+loc.print <- function(background_list,tt){
+  back <- list()
+  general <- list()
+  for(i in 1:length(background_list)){
+    if(class(background_list[[i]])[2] == "background"){
+      back <- c(back,list(background_list[[i]]))
+    }else{
+      general <- c(general,list(background_list[[i]]))
+    }
+  }
+  background_list <- c(back,general)
+  x <- y <- vector("numeric")
+  for(i in 1:length(background_list)){
+    x[i] <- background_list[[i]]$location[1]
+    y[i] <- background_list[[i]]$location[2]
+  }
+  plot(x,y,xlim = c(-20,20),ylim = c(-20,20),col = c(rep("black",length(back)),rep("aquamarine4"
+,length(general))),pch = 20,main = tt,cex = 0.5)
+  points(5,5,col = "red",pch  = 19, cex = 1)
+}
+
+
+
+
+
+
+overall_simulation <- function(background_list,t,sd,radius=3,boundary = 20,arc=pi/6,ec = 2,resource = c(5,5),
+                                  st_birth=1,birth_rate=0.5,st_death=1,death_rate=0.1,capacity=1000){
   iter <- 1
   while(iter <= t){
 ## Age
@@ -133,7 +156,7 @@ background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
     background_list <- background_list[!is.na(background_list)]
 ## Death 
     pop <- length(background_list)
-    logic <- lapply(background_list,death,st_death,death_rate,pop,capapcity)
+    logic <- lapply(background_list,death,st_death,death_rate,pop,capacity)
     survive <- which(logic == "True")
     background_list <- background_list[survive]
     if(length(background_list)==0){
@@ -144,4 +167,38 @@ background_simulation <- function(n,t,boundary,sd,radius,arc,ec,resource,
   }
   return(background_list)
   }
+
+overall_search <- function(sd){
+  par(mfrow=c(2,3))
+  background_list <- lapply(1:100, function(x){
+    background_microbe(speed = runif(1,0,1), location = c(runif(1,-2,2),runif(1,-2,2)))
+  })
+  general_list <- lapply(1:500, function(x){
+    new_microbe(speed = runif(1,0,1), location = c(runif(1,-5,5),runif(1,-5,5)))
+  })
+  background_list <- c(background_list,general_list)
+  loc.print(background_list, "Age = 0")
+  
+  background_list <- overall_simulation(background_list,20,sd)
+  loc.print(background_list, "Age = 20")
+  
+  background_list <- overall_simulation(background_list,40,sd)
+  loc.print(background_list, "Age = 40")
+  
+  background_list <- overall_simulation(background_list,60,sd)
+  loc.print(background_list, "Age = 60")
+  
+  background_list <- overall_simulation(background_list,80,sd)
+  loc.print(background_list, "Age = 80")
+  
+  background_list <- overall_simulation(background_list,100,sd)
+  loc.print(background_list, "Age = 100")
+  
+  par(mfrow=c(1,1))
+}
+
+
+
+
+
 

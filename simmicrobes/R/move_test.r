@@ -231,28 +231,3 @@ density_test1 <- function(sd = NA,radius,arc,ec){
   }
   loc_printbig.microbe(g1,g2,"Age = 15")
 }
-
-
-
-
-combined_test_1 <- function(n,t,boundary = 10, sd = 1, arc = pi/12,resource = c(5,5)){
-  par(mfrow=c(2,3))
-  g1 <- background_movement(n,t,boundary,sd ,1,arc,2,c(5,5))
-  loc_print.microbe(g1, "r = 1, C = 2")
-  g2 <- background_movement(n,t,boundary,sd ,2,arc,5,c(5,5))
-  loc_print.microbe(g2, "r = 1,C = 5")
-  g3 <- background_movement(n,t,boundary,sd ,3,arc,10,c(5,5))
-  loc_print.microbe(g3, "r = 1,C = 10")
-  g4 <- background_movement(n,t,boundary,sd ,1,arc,2,c(5,5))
-  loc_print.microbe(g4, "r = 2, C = 2")
-  g5 <- background_movement(n,t,boundary,sd ,2,arc,5,c(5,5))
-  loc_print.microbe(g5, "r = 2, C = 5")
-  g6 <- background_movement(n,t,boundary,sd ,3,arc,10,c(5,5))
-  loc_print.microbe(g6, "r = 2, C = 10")
-  par(mfrow=c(1,1))
-}
-
-
-
-
-

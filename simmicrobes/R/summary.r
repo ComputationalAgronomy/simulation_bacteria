@@ -27,8 +27,8 @@ loc_print.microbe <- function(m, title){
     b[i] <- c(m[[i]]$location[2])
     c <- cbind(a,b)
   }
-  plot(c,xlim = c(-5,6),ylim = c(-5,6),main = title,xlab="X",ylab="Y",cex=0.5,pch=18)
-  points(5,5,col = "red",pch  = 19)
+  plot(c,xlim = c(-5,10),ylim = c(-5,10),main = title,xlab="X",ylab="Y",cex = 0.5,pch=19)
+  points(5,5,col = "red",pch  = 19,cex = 2)
 } 
 
 ## Track the location of an individual. 
