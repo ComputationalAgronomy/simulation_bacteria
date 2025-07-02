@@ -5,7 +5,6 @@
 ## population: number of agents
 ## capacity: largest number of agents could be held in environment
 ## st_birth/death: age start to reproducing/dying
-
 death.microbe <- function(m, st_death, death_rate, population, capacity) {
   if (m$age > st_death) {
     p <- runif(1, 0, 1)
@@ -27,7 +26,6 @@ death <- function(m, st_death, death_rate, population, capacity) {
 }
 
 #' @export
-
 birth.general <- function(m, st_birth, birth_rate, population, capacity) {
   if (m$age < st_birth) {
     n <- NA
@@ -46,6 +44,7 @@ birth.general <- function(m, st_birth, birth_rate, population, capacity) {
   return(n)
 }
 
+#' @export
 birth.background <- function(m, st_birth, birth_rate, population, capacity) {
   if (m$age < st_birth) {
     n <- NA

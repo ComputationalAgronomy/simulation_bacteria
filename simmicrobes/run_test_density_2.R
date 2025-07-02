@@ -32,8 +32,8 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
     m_all <- c(m_movable, m_stationary)
     xy_cord <- sapply(m_all, "[[", "location")
 
-    # If all movable: angle_tab <- angle.table.3(xy_cord, index = seq_len(NCOL(xy_cord)), ncpu = ncpu)
-    angle_tab <- angle.table.3(xy_cord, index = seq_along(m_movable), ncpu = ncpu)
+    # If all movable: angle_tab <- cal_angle_table(xy_cord, index = seq_len(NCOL(xy_cord)), ncpu = ncpu)
+    angle_tab <- cal_angle_table(xy_cord, ncpu = ncpu)
     distance_tab <- distance.table.3(xy_cord, index = seq_along(m_movable), ncpu = ncpu)
 
     # m_movable <- parLapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {

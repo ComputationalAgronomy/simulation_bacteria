@@ -4,7 +4,7 @@ test_that("if the resource factor makes sense", {
   angle <- vector("numeric")
   while (iter <= 10000) {
     loc <- move.background(back, c(0), c(0), 0.5, -1, pi / 12, 1, c(0, 1))$location
-    angle[iter] <- angle.cal(loc, c(0, 0))
+    angle[iter] <- cal_angle_each(loc, c(0, 0))
     iter <- iter + 1
   }
   expect_equal(mean(angle, na.rm = T), pi / 2, tolerance = 0.05)
@@ -26,7 +26,7 @@ test_that("if the density factor makes sense", {
   angle <- vector("numeric")
   iter <- 1
   while (iter <= 10000) {
-    angle[iter] <- angle.cal(move.general(microbe_list[[1]], distance_table[1, ], angle_table[1, ],
+    angle[iter] <- cal_angle_each(move.general(microbe_list[[1]], distance_table[1, ], angle_table[1, ],
       sd = NA, 2,
       pi / 12, 1
     )$location, c(0, 0))
@@ -54,7 +54,7 @@ test_that("if the density factor makes sense", {
   angle <- vector("numeric")
   iter <- 1
   while (iter <= 10000) {
-    angle[iter] <- angle.cal(move.background(
+    angle[iter] <- cal_angle_each(move.background(
       background_list[[1]], distance_table[1, ], angle_table[1, ], 0.5, 2, pi / 12,
       1, c(2, 2)
     )$location, c(0, 0))

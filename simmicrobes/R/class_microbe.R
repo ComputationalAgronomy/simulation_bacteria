@@ -63,7 +63,8 @@ move <- function(m, distance, angle, sd, radius, arc, ec, resource) {
       if (ag[i] > 2 * pi) {
         ag[i] <- ag[i] - 2 * pi
       }
-      prob[which(abs(ori - ag[i]) < 0.001)] <- prob[which(abs(ori - ag[i]) < 0.001)] / ec
+      index <- which(abs(ori - ag[i]) < 0.001)
+      prob[index] <- prob[index] / ec
     }
     theta <- sample(ori, 1, prob = prob)
   } else {
@@ -83,6 +84,7 @@ move <- function(m, distance, angle, sd, radius, arc, ec, resource) {
     all_forbidden_angles <- all_forbidden_angles %% (2 * pi)
     DEG_TO_RAD <- pi / 180
     indices_to_penalize <- unique(round(all_forbidden_angles / DEG_TO_RAD))
+    indices_to_penalize <- indices_to_penalize[!is.na(indices_to_penalize)]
     indices_to_penalize[indices_to_penalize == 0] <- 360 # Map 0 degrees to index 360
 
     # Apply repulsion penalty in a single vectorized step
@@ -102,7 +104,7 @@ move.background <- function(m, distance_table, angle_table, sd, radius, arc, ec,
   if (p < 0.1) {
     theta <- NA
   } else {
-    angle <- angle.cal(resource, m$location)
+    angle <- cal_angle_each(resource, m$location)
     ori <- seq(pi / 180, 2 * pi, pi / 180)
     for (i in 1:360) {
       if (ori[i] - angle >= pi) {

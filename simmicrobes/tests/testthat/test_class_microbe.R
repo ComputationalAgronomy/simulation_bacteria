@@ -56,8 +56,8 @@ test_that("move.background changes location or not based on random p", {
   distance_table <- c(1, 2, 3)
   angle_table <- c(0, pi / 2, pi)
   resource <- c(5, 5)
-  # angle.cal is not defined in the provided code, so skip if not available
-  if (exists("angle.cal")) {
+  # cal_angle_each is not defined in the provided code, so skip if not available
+  if (exists("cal_angle_each")) {
     m2 <- move.background(m, distance_table, angle_table, sd = 1, radius = 2, arc = pi / 6, ec = 2, resource = resource)
     expect_true(is.numeric(m2$location[1]) && is.numeric(m2$location[2]))
   } else {

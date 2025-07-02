@@ -57,7 +57,7 @@ test_that("it samples uniformly when no neighbors are present", {
   angle_ins <- numeric(0) # No neighbors
 
   samples <- replicate(N_SAMPLES, {
-    apply_repulsion_and_sample_angle_local(prob, ORI, angle_ins, arc = pi / 6, ec = 100)
+    apply_repulsion_and_sample_angle_v2(prob, ORI, angle_ins, arc = pi / 6, ec = 100)
   })
 
   # A simple check that samples are not all clustered in one quadrant
@@ -73,7 +73,7 @@ test_that("it avoids a single neighbor's repulsion zone", {
   repulsion_arc <- pi / 4 # 45 degrees
 
   samples <- replicate(N_SAMPLES, {
-    apply_repulsion_and_sample_angle_local(prob, ORI, neighbor_angle, repulsion_arc, ec = 1e6)
+    apply_repulsion_and_sample_angle_v2(prob, ORI, neighbor_angle, repulsion_arc, ec = 1e6)
   })
 
   forbidden_zone_start <- neighbor_angle - repulsion_arc
@@ -91,7 +91,7 @@ test_that("it correctly handles angle wrapping around 2*pi", {
   repulsion_arc <- 20 * pi / 180 # 20 degrees
 
   samples <- replicate(N_SAMPLES, {
-    apply_repulsion_and_sample_angle_local(prob, ORI, neighbor_angle, repulsion_arc, ec = 1e6)
+    apply_repulsion_and_sample_angle_v2(prob, ORI, neighbor_angle, repulsion_arc, ec = 1e6)
   })
 
   # Forbidden zone is from -10 to 30 degrees, which wraps around 0/2pi
@@ -108,7 +108,7 @@ test_that("it avoids multiple neighbors' repulsion zones", {
   repulsion_arc <- pi / 6 # 30 degrees
 
   samples <- replicate(N_SAMPLES, {
-    apply_repulsion_and_sample_angle_local(prob, ORI, neighbor_angles, repulsion_arc, ec = 1e6)
+    apply_repulsion_and_sample_angle_v2(prob, ORI, neighbor_angles, repulsion_arc, ec = 1e6)
   })
 
   # Zone 1: 90 +/- 30 degrees -> [60, 120] degrees
@@ -128,7 +128,7 @@ test_that("repulsion strength (ec) correctly modifies probability", {
 
   # Low repulsion (ec=2) should reduce but not eliminate probability
   samples_low_ec <- replicate(N_SAMPLES, {
-    apply_repulsion_and_sample_angle_local(prob, ORI, neighbor_angle, repulsion_arc, ec = 2)
+    apply_repulsion_and_sample_angle_v2(prob, ORI, neighbor_angle, repulsion_arc, ec = 2)
   })
 
   forbidden_zone_start <- neighbor_angle - repulsion_arc
