@@ -158,15 +158,9 @@ overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, a
       y <- y[inside]
       angle_tab <- angle.table(x, y)
       distance_tab <- distance.table(x, y)
-      background_list <- lapply(
-        seq_along(background_list),
-        function(k) {
-          move(
-            background_list[[k]], distance_tab[k, ],
-            angle_tab[k, ], sd, radius, arc, ec, resource
-          )
-        }
-      )
+      background_list <- lapply(seq_along(background_list), function(k) {
+        move(background_list[[k]], distance_tab[k, ], angle_tab[k, ], sd, radius, arc, ec, resource)
+      })
     } else {
       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
       break
