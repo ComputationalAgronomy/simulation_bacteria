@@ -1,7 +1,7 @@
 ## calculate the distance of each microbe's around.
 distance.table <- function(m, n) {
   distance <- matrix(NA, length(m), length(m) - 1)
-  for (i in 1:length(m)) {
+  for (i in seq_along(m)) {
     distance[i, ] <- sqrt((m[i] - m[-i])^2 + (n[i] - n[-i])^2)
   }
   return(distance)
@@ -41,7 +41,7 @@ general_movement <- function(n, t, boundary, sd = NA, radius, arc, ec) {
   iter <- 1
   while (iter <= t) {
     x <- y <- vector("numeric")
-    for (i in 1:length(general_list)) {
+    for (i in seq_along(general_list)) {
       x[i] <- general_list[[i]]$location[1]
       y[i] <- general_list[[i]]$location[2]
     }
@@ -78,7 +78,7 @@ background_movement <- function(n, t, boundary, sd, radius, arc, ec, resource) {
   iter <- 1
   while (iter <= t) {
     x <- y <- vector("numeric")
-    for (i in 1:length(background_list)) {
+    for (i in seq_along(background_list)) {
       x[i] <- background_list[[i]]$location[1]
       y[i] <- background_list[[i]]$location[2]
     }
@@ -108,10 +108,10 @@ background_movement <- function(n, t, boundary, sd, radius, arc, ec, resource) {
 }
 
 
-loc.print <- function(background_list, tt) {
+loc.print <- function(background_list, main_title) {
   back <- list()
   general <- list()
-  for (i in 1:length(background_list)) {
+  for (i in seq_along(background_list)) {
     if (class(background_list[[i]])[2] == "background") {
       back <- c(back, list(background_list[[i]]))
     } else {
@@ -120,15 +120,17 @@ loc.print <- function(background_list, tt) {
   }
   background_list <- c(back, general)
   x <- y <- vector("numeric")
-  for (i in 1:length(background_list)) {
+  for (i in seq_along(background_list)) {
     x[i] <- background_list[[i]]$location[1]
     y[i] <- background_list[[i]]$location[2]
   }
-  plot(x, y, xlim = c(-20, 20), ylim = c(-20, 20), col = c(rep("black", length(back)), rep(
-    "aquamarine4",
-    length(general)
-  )), pch = 20, main = tt, cex = 0.5)
-  points(5, 5, col = "red", pch = 19, cex = 1)
+  plot(x, y,
+    xlim = c(-20, 20), ylim = c(-20, 20),
+    col = c(rep("black", length(back)), rep("aquamarine4", length(general))),
+    pch = 20, main = main_title, cex = 0.5,
+    xaxt = "n", yaxt = "n", axes= FALSE, xlab = "", ylab = ""
+  )
+  points(5, 5, col = "red", pch = 19, cex = 1.5)
 }
 
 
@@ -136,15 +138,16 @@ loc.print <- function(background_list, tt) {
 
 
 
-overall_simulation <- function(background_list, t, sd, radius = 3, boundary = 20, arc = pi / 6, ec = 2, resource = c(5, 5),
+overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, arc = pi / 6, ec = 2, resource = c(5, 5),
                                st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 1000) {
   iter <- 1
   while (iter <= t) {
+    print(paste("Iteration: ", iter, "  T:", t))
     ## Age
-    background_list <- lapply(background_list, age)
+    background_list <- lapply(all_microbes, age)
     ## Move
     x <- y <- vector("numeric")
-    for (i in 1:length(background_list)) {
+    for (i in seq_along(background_list)) {
       x[i] <- background_list[[i]]$location[1]
       y[i] <- background_list[[i]]$location[2]
     }
@@ -183,16 +186,25 @@ overall_simulation <- function(background_list, t, sd, radius = 3, boundary = 20
     }
     iter <- iter + 1
   }
-  return(background_list)
+  return(all_microbes)
+}
+
+generate_init_loc <- function(boundary) {
+  c(runif(1, -boundary, boundary), runif(1, -boundary, boundary))
 }
 
 overall_search <- function(sd) {
   par(mfrow = c(2, 3))
+
+  init_bound_active <- 1
+  init_bound_bg <- 10
+
   background_list <- lapply(1:100, function(x) {
-    background_microbe(speed = runif(1, 0, 1), location = c(runif(1, -2, 2), runif(1, -2, 2)))
+    background_microbe(speed = runif(1, 0, 1), location = generate_init_loc(init_bound_active))
   })
+
   general_list <- lapply(1:500, function(x) {
-    new_microbe(speed = runif(1, 0, 1), location = c(runif(1, -5, 5), runif(1, -5, 5)))
+    new_microbe(speed = runif(1, 0, 1), location = generate_init_loc(init_bound_bg))
   })
   background_list <- c(background_list, general_list)
   loc.print(background_list, "Age = 0")
@@ -200,16 +212,16 @@ overall_search <- function(sd) {
   background_list <- overall_simulation(background_list, 20, sd)
   loc.print(background_list, "Age = 20")
 
-  background_list <- overall_simulation(background_list, 40, sd)
+  background_list <- overall_simulation(background_list, 20, sd)
   loc.print(background_list, "Age = 40")
 
-  background_list <- overall_simulation(background_list, 60, sd)
+  background_list <- overall_simulation(background_list, 20, sd)
   loc.print(background_list, "Age = 60")
 
-  background_list <- overall_simulation(background_list, 80, sd)
+  background_list <- overall_simulation(background_list, 20, sd)
   loc.print(background_list, "Age = 80")
 
-  background_list <- overall_simulation(background_list, 100, sd)
+  background_list <- overall_simulation(background_list, 20, sd)
   loc.print(background_list, "Age = 100")
 
   par(mfrow = c(1, 1))
