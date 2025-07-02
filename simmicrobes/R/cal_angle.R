@@ -61,5 +61,4 @@ time_trial_angle <- function() {
     angle_tab_3 <- angle.table.3(xy_cord, index = seq_len(NCOL(xy_cord)))
   })
   all.equal(t(simplify2array(angle_tab_3)), angle_tab)
-  
 }

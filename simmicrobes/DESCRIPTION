@@ -1,16 +1,25 @@
 Package: simmicrobes
 Title: Simulate Microbes in the Soils
 Version: 0.0.1
-Authors@R: c(
-        person("Max", "yuan", , "first.last@example.com", role = c("aut", "cre")),
-        person("Steven", "Wu", , "stevenwu@ntu.edu.tw", role = c("aut"))
+Authors@R:
+    c(
+        person(given = "Max", family = "Yuan", email = "max.yuan@example.com",
+               role = c("aut", "cre")),
+        person(given = "Steven", family = "Wu", email = "stevenwu@ntu.edu.tw",
+               role = c("aut"))
     )
-Description: What the package does (one paragraph).
+Description: Provides a framework for simulating microbial population   
+    dynamics in soil environments. This package allows users to model
+    the growth, interaction, and response of various microbial species
+    to different environmental factors, facilitating in-silico
+    experiments for soil ecology research.
 License: MIT + file LICENSE
-Imports: ggplot2 , schoolmath
+URL: https://github.com/ComputationalAgronomy/simulation_bacteria
+BugReports: https://github.com/ComputationalAgronomy/simulation_bacteria/issues
+Imports: ggplot2, schoolmath
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-Suggests: 
+Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -1,8 +1,8 @@
 library(devtools)
 load_all()
-
+1
 ## set speed to 2
-ncpu <- detectCores() * 2 / 3
+ncpu <- floor(detectCores() * 2 / 3)
 
 density_test_take2 <- function(sd = NA, radius, arc, ec) {
 
@@ -21,6 +21,10 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
   m_stationary <- g2
 
   par(mfrow = c(2, 3))
+   cl <- makeCluster(getOption("cl.cores", 2))
+
+
+
   loc_printbig.microbe(m_movable, m_stationary, "Age = 0")
   # iter <- 1
   iter_end <- 5
@@ -32,7 +36,8 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
     angle_tab <- angle.table.3(xy_cord, index = seq_along(m_movable), ncpu = ncpu)
     distance_tab <- distance.table.3(xy_cord, index = seq_along(m_movable), ncpu = ncpu)
 
-    m_movable <- parLapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
+    # m_movable <- parLapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
+    m_movable <- mclapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
       move(m_movable[[k]], distance_tab[[k]], angle_tab[[k]],
         sd, radius, arc, ec)
     })

@@ -52,7 +52,4 @@ time_trial_distance <- function() {
   })
   dist_3 <- t(simplify2array(dist_temp))
   all.equal(distance, dist_3)
-
-
 }
-
