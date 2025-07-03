@@ -27,7 +27,7 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
 
   plot_loc_two_microbes(m_movable, m_stationary, "Age = 0")
   # iter <- 1
-  iter_end <- 100
+  iter_end <- 10
   for(iter in seq_len(iter_end)){
     m_all <- c(m_movable, m_stationary)
     xy_cord <- sapply(m_all, "[[", "location")
@@ -38,11 +38,11 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
 
     # m_movable <- parLapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
     m_movable <- mclapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
-      move(m_movable[[k]], distance_tab[[k]], angle_tab[[k]],
+      move(m_movable[[k]], distance_tab[k,], angle_tab[k, ],
         sd, radius, arc, ec)
     })
 
-    if (iter %in% seq(0, iter_end, by=10)){
+    if (iter %in% seq(0, iter_end, by=2)){
       plot_loc_two_microbes(m_movable, m_stationary, sprintf("Age = %s", iter))
       abline(h=c(-start, start))
     }
