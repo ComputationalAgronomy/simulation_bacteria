@@ -1,6 +1,6 @@
 library(devtools)
-load_all()
-1
+load_all("simmicrobes")
+
 ## set speed to 2
 ncpu <- floor(detectCores() * 2 / 3)
 
@@ -20,21 +20,21 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
   m_movable <- c(g1, g3)
   m_stationary <- g2
 
-  par(mfrow = c(2, 3))
-  cl <- makeCluster(getOption("cl.cores", 2))
+  par(mfrow = c(3, 3))
+  # cl <- makeCluster(getOption("cl.cores", 2))
 
 
 
   plot_loc_two_microbes(m_movable, m_stationary, "Age = 0")
   # iter <- 1
-  iter_end <- 5
+  iter_end <- 100
   for(iter in seq_len(iter_end)){
     m_all <- c(m_movable, m_stationary)
     xy_cord <- sapply(m_all, "[[", "location")
 
     # If all movable: angle_tab <- cal_angle_table(xy_cord, index = seq_len(NCOL(xy_cord)), ncpu = ncpu)
     angle_tab <- calculate_angle_table(xy_cord[1, ], xy_cord[2,], ncpu = ncpu)
-    distance_tab <- calculate_distance_table(xy_cord[1, ], xy_cord[2,])
+    distance_tab <- calculate_dist_table(xy_cord[1, ], xy_cord[2,])
 
     # m_movable <- parLapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
     m_movable <- mclapply(seq_along(m_movable), mc.cores = ncpu,  function(k) {
@@ -42,7 +42,7 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
         sd, radius, arc, ec)
     })
 
-    if (iter %in% c(1, 2, 3, iter_end)){
+    if (iter %in% seq(0, iter_end, by=10)){
       plot_loc_two_microbes(m_movable, m_stationary, sprintf("Age = %s", iter))
       abline(h=c(-start, start))
     }
@@ -51,10 +51,13 @@ density_test_take2 <- function(sd = NA, radius, arc, ec) {
 }
 
 
-sd <- 1
+sd <- 0
 radius <- 1
-arc <- pi/4
-ec <- 3
-density_test_take2(sd, radius, arc, ec = 3)
-density_test_take2(sd, radius, arc, ec = 0.5)
-density_test_take2(sd, radius, arc, ec = 0.01)
+arc <- pi / 4
+
+# density_test_take2(sd, radius, arc, ec = 1.5)
+#          density_test_take2(sd, radius, arc, ec = 0.01)
+
+
+# density_test_take2(sd, radius, arc, ec = 3)
+# density_test_take2(sd, radius, arc, ec = 0.5)

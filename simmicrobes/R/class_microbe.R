@@ -48,32 +48,32 @@ move <- function(m, distance, angle, sd, radius, arc, ec, resource) {
   UseMethod("move")
 }
 
-
-.apply_repulsion_and_sample_angle_original <- function(prob, ori, angle_ins, arc, ec) {
+ANGLE_THRESHOLD <- pi/180/2
+.apply_repulsion_and_sample_angle_old <- function(prob, ori, angle_ins, arc, ec) {
   if (length(angle_ins) > 0) {
     ag <- list()
-    for (i in 1:length(angle_ins)) {
+    for (i in seq_along(angle_ins)) {
       ag[[i]] <- seq(angle_ins[i] - arc, angle_ins[i] + arc, pi / 180)
     }
     ag <- unlist(ag)
-    for (i in 1:length(ag)) {
+    for (i in seq_along(ag)) {
       if (ag[i] <= 0) {
         ag[i] <- ag[i] + 2 * pi
       }
       if (ag[i] > 2 * pi) {
         ag[i] <- ag[i] - 2 * pi
       }
-      index <- which(abs(ori - ag[i]) < 0.001)
+      index <- which(abs(ori - ag[i]) < ANGLE_THRESHOLD)
       prob[index] <- prob[index] / ec
     }
-    theta <- sample(ori, 1, prob = prob)
-  } else {
-    theta <- sample(ori, 1, prob = prob)
   }
+  sample(ori, 1, prob = prob)
+
 }
 
 # Helper function to apply repulsion from neighbors and sample a final angle.
 # This vectorized implementation is much more efficient than the original loops.
+DEG_TO_RAD <- pi / 180
 .apply_repulsion_and_sample_angle <- function(prob, ori, angle_ins, arc, ec) {
   if (length(angle_ins) > 0) {
     # Vectorized calculation of all angles in the repulsion arcs
@@ -82,13 +82,22 @@ move <- function(m, distance, angle, sd, radius, arc, ec, resource) {
 
     # Normalize angles to be within [0, 2*pi) and convert to integer indices (1 to 360)
     all_forbidden_angles <- all_forbidden_angles %% (2 * pi)
-    DEG_TO_RAD <- pi / 180
-    indices_to_penalize <- unique(round(all_forbidden_angles / DEG_TO_RAD))
-    indices_to_penalize <- indices_to_penalize[!is.na(indices_to_penalize)]
-    indices_to_penalize[indices_to_penalize == 0] <- 360 # Map 0 degrees to index 360
 
+    indices_to_penalize <- table(round(all_forbidden_angles / DEG_TO_RAD))
+    # indices_to_penalize <- indices_to_penalize[!is.na(indices_to_penalize)]
+    # indices_to_penalize[indices_to_penalize == 0] <- 360 # Map 0 degrees to index 360
+    if ("0" %in% names(indices_to_penalize)) {
+      if (!"360" %in% names(indices_to_penalize)) {
+        indices_to_penalize[["360"]] <- 0
+      }
+      indices_to_penalize[["360"]] <- indices_to_penalize[["360"]] + indices_to_penalize[["0"]] # Map 0 degrees to index 360
+      #remove the 0 degree index
+      indices_to_penalize <- indices_to_penalize[names(indices_to_penalize) != "0"]
+    }
     # Apply repulsion penalty in a single vectorized step
-    prob[indices_to_penalize] <- prob[indices_to_penalize] / ec
+    # prob[indices_to_penalize] <- prob[indices_to_penalize] / ec
+    index <- as.numeric(names(indices_to_penalize))
+    prob[index] <- prob[index] / (ec^indices_to_penalize)
   }
 
   # Sample the final angle from the (potentially modified) probability distribution
