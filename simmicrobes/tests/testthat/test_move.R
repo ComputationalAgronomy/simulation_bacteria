@@ -21,8 +21,8 @@ test_that("if the density factor makes sense", {
     x[i] <- microbe_list[[i]]$location[1]
     y[i] <- microbe_list[[i]]$location[2]
   }
-  distance_table <- distance.table(x, y)
-  angle_table <- angle.table(x, y)
+  distance_table <- calculate_dist_table(x, y)
+  angle_table <- calculate_angle_table(x, y)
   angle <- vector("numeric")
   iter <- 1
   while (iter <= 10000) {
@@ -49,8 +49,8 @@ test_that("if the density factor makes sense", {
     x[i] <- background_list[[i]]$location[1]
     y[i] <- background_list[[i]]$location[2]
   }
-  distance_table <- distance.table(x, y)
-  angle_table <- angle.table(x, y)
+  distance_table <- calculate_dist_table(x, y)
+  angle_table <- calculate_angle_table(x, y)
   angle <- vector("numeric")
   iter <- 1
   while (iter <= 10000) {

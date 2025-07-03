@@ -2,17 +2,17 @@
 resource_test <- function(n, t, boundary = 10, radius = 0, arc = 0, ec = 0, resource = c(5, 5)) {
   par(mfrow = c(2, 3))
   g1 <- general_movement(n, t, boundary, sd = NA, radius, arc, ec)
-  loc_print.microbe(g1, "No resource")
+  plot_loc(g1, "No resource")
   g2 <- background_movement(n, t, boundary, sd = 2, radius, arc, ec, c(5, 5))
-  loc_print.microbe(g2, "sd = 2")
+  plot_loc(g2, "sd = 2")
   g3 <- background_movement(n, t, boundary, sd = 1.5, radius, arc, ec, c(5, 5))
-  loc_print.microbe(g3, "sd = 1.5")
+  plot_loc(g3, "sd = 1.5")
   g4 <- background_movement(n, t, boundary, sd = 1, radius, arc, ec, c(5, 5))
-  loc_print.microbe(g4, "sd = 1")
+  plot_loc(g4, "sd = 1")
   g5 <- background_movement(n, t, boundary, sd = 0.5, radius, arc, ec, c(5, 5))
-  loc_print.microbe(g5, "sd = 0.5")
+  plot_loc(g5, "sd = 0.5")
   g6 <- background_movement(n, t, boundary, sd = 0.1, radius, arc, ec, c(5, 5))
-  loc_print.microbe(g6, "sd = 0.1")
+  plot_loc(g6, "sd = 0.1")
   par(mfrow = c(1, 1))
 }
 
@@ -22,7 +22,7 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
   background_list <- lapply(1:n, function(x) {
     background_microbe(speed = runif(1, 0, 1), location = c(runif(1, -1, 1), runif(1, -1, 1)))
   })
-  loc_print.microbe(background_list, "Age = 0")
+  plot_loc(background_list, "Age = 0")
   iter <- 1
   while (iter <= 20) {
     x <- y <- vector("numeric")
@@ -35,8 +35,8 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     if (length(background_list) > 0) {
       x <- x[inside]
       y <- y[inside]
-      angle_tab <- angle.table(x, y)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calulate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
       background_list <- lapply(
         seq_along(background_list),
         function(k) {
@@ -52,7 +52,7 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     }
     iter <- iter + 1
   }
-  loc_print.microbe(background_list, "Age = 20")
+  plot_loc(background_list, "Age = 20")
 
   while (iter <= 40) {
     x <- y <- vector("numeric")
@@ -65,8 +65,8 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     if (length(background_list) > 0) {
       x <- x[inside]
       y <- y[inside]
-      angle_tab <- angle.table(x, y)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calulate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
       background_list <- lapply(
         seq_along(background_list),
         function(k) {
@@ -82,7 +82,7 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     }
     iter <- iter + 1
   }
-  loc_print.microbe(background_list, "Age = 40")
+  plot_loc(background_list, "Age = 40")
 
   while (iter <= 60) {
     x <- y <- vector("numeric")
@@ -95,8 +95,8 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     if (length(background_list) > 0) {
       x <- x[inside]
       y <- y[inside]
-      angle_tab <- angle.table(x, y)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calulate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
       background_list <- lapply(
         seq_along(background_list),
         function(k) {
@@ -112,7 +112,7 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     }
     iter <- iter + 1
   }
-  loc_print.microbe(background_list, "Age = 60")
+  plot_loc(background_list, "Age = 60")
 
   while (iter <= 80) {
     x <- y <- vector("numeric")
@@ -125,8 +125,8 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     if (length(background_list) > 0) {
       x <- x[inside]
       y <- y[inside]
-      angle_tab <- angle.table(x, y)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calulate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
       background_list <- lapply(
         seq_along(background_list),
         function(k) {
@@ -142,7 +142,7 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     }
     iter <- iter + 1
   }
-  loc_print.microbe(background_list, "Age = 80")
+  plot_loc(background_list, "Age = 80")
 
 
   while (iter <= 100) {
@@ -156,8 +156,8 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     if (length(background_list) > 0) {
       x <- x[inside]
       y <- y[inside]
-      angle_tab <- angle.table(x, y)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calulate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
       background_list <- lapply(
         seq_along(background_list),
         function(k) {
@@ -173,27 +173,11 @@ check_movement <- function(n, t = 100, boundary = 10, sd = 2, radius = 0, arc = 
     }
     iter <- iter + 1
   }
-  loc_print.microbe(background_list, "Age = 100")
+  plot_loc(background_list, "Age = 100")
   par(mfrow = c(1, 1))
 }
 
 
-loc_printbig.microbe <- function(m, n, o) {
-  a <- b <- vector("numeric")
-  for (i in 1:length(m)) {
-    a[i] <- c(m[[i]]$location[1])
-    b[i] <- c(m[[i]]$location[2])
-  }
-  c <- d <- vector("numeric")
-  for (i in 1:length(n)) {
-    c[i] <- c(n[[i]]$location[1])
-    d[i] <- c(n[[i]]$location[2])
-  }
-  colors <- c(rep("blue", length(a)), rep("black", length(c)))
-  x <- c(a, c)
-  y <- c(b, d)
-  plot(x, y, col = colors, pch = 20, main = o)
-}
 
 ## set speed to 1
 density_test1 <- function(sd = NA, radius, arc, ec) {
@@ -212,7 +196,7 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
     g3[[i]]$location[1] <- i
   }
   g1 <- c(g1, g3)
-  loc_printbig.microbe(g1, g2, "Age = 0")
+  plot_loc_two_microbes(g1, g2, "Age = 0")
   iter <- 1
   while (iter < 5) {
     x <- y <- vector("numeric")
@@ -220,8 +204,8 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
       x[i] <- g1[[i]]$location[1]
       y[i] <- g1[[i]]$location[2]
     }
-    angle_tab <- angle.table(x, y)
-    distance_tab <- distance.table(x, y)
+    angle_tab <- calulate_angle_table(x, y)
+    distance_tab <- calculate_dist_table(x, y)
     g1 <- lapply(seq_along(g1), function(k) {
       move(
         g1[[k]], distance_tab[k, ],
@@ -230,7 +214,7 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
     })
     iter <- iter + 1
   }
-  loc_printbig.microbe(g1, g2, "Age = 5")
+  plot_loc_two_microbes(g1, g2, "Age = 5")
 
   while (iter < 10) {
     x <- y <- vector("numeric")
@@ -238,8 +222,8 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
       x[i] <- g1[[i]]$location[1]
       y[i] <- g1[[i]]$location[2]
     }
-    angle_tab <- angle.table(x, y)
-    distance_tab <- distance.table(x, y)
+    angle_tab <- calulate_angle_table(x, y)
+    distance_tab <- calculate_dist_table(x, y)
     g1 <- lapply(seq_along(g1), function(k) {
       move(
         g1[[k]], distance_tab[k, ],
@@ -248,7 +232,7 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
     })
     iter <- iter + 1
   }
-  loc_printbig.microbe(g1, g2, "Age = 10")
+  plot_loc_two_microbes(g1, g2, "Age = 10")
 
   while (iter < 15) {
     x <- y <- vector("numeric")
@@ -256,8 +240,8 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
       x[i] <- g1[[i]]$location[1]
       y[i] <- g1[[i]]$location[2]
     }
-    angle_tab <- angle.table(x, y)
-    distance_tab <- distance.table(x, y)
+    angle_tab <- calulate_angle_table(x, y)
+    distance_tab <- calculate_dist_table(x, y)
     g1 <- lapply(seq_along(g1), function(k) {
       move(
         g1[[k]], distance_tab[k, ],
@@ -266,5 +250,5 @@ density_test1 <- function(sd = NA, radius, arc, ec) {
     })
     iter <- iter + 1
   }
-  loc_printbig.microbe(g1, g2, "Age = 15")
+  plot_loc_two_microbes(g1, g2, "Age = 15")
 }

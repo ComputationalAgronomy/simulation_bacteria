@@ -4,14 +4,6 @@ load_all("simmicrobes")
 
 
 
-## calculate the distance of each microbe's around.
-distance.table <- function(m, n) {
-  distance <- matrix(NA, length(m), length(m) - 1)
-  for (i in seq_along(m)) {
-    distance[i, ] <- sqrt((m[i] - m[-i])^2 + (n[i] - n[-i])^2)
-  }
-  return(distance)
-}
 
 
 
@@ -30,8 +22,8 @@ distance.table <- function(m, n) {
 #     general_list <- general_list[inside]
 #     x <- x[inside]
 #     y <- y[inside]
-#     distance_tab <- distance.table(x, y)
-#     angle_tab <- angle.table(x, y)
+#     distance_tab <- calculate_dist_table(x, y)
+#     angle_tab <- calulate_angle_table(x, y)
 #     if (length(general_list) > 0) {
 #       general_list <- lapply(
 #         seq_along(general_list),
@@ -68,8 +60,8 @@ distance.table <- function(m, n) {
 #     if (length(background_list) > 0) {
 #       x <- x[inside]
 #       y <- y[inside]
-#       angle_tab <- angle.table(x, y)
-#       distance_tab <- distance.table(x, y)
+#       angle_tab <- calulate_angle_table(x, y)
+#       distance_tab <- calculate_dist_table(x, y)
 #       background_list <- lapply(
 #         seq_along(background_list),
 #         function(k) {
@@ -87,34 +79,6 @@ distance.table <- function(m, n) {
 #   }
 #   return(background_list)
 # }
-
-
-loc.print <- function(all_microbes, main_title, resource = c(5, 5)) {
-  back <- list()
-  general <- list()
-  for (i in seq_along(all_microbes)) {
-    if (class(all_microbes[[i]])[2] == "background") {
-      back <- c(back, list(all_microbes[[i]]))
-    } else {
-      general <- c(general, list(all_microbes[[i]]))
-    }
-  }
-  all_microbes <- c(back, general)
-  x <- y <- vector("numeric")
-  for (i in seq_along(all_microbes)) {
-    x[i] <- all_microbes[[i]]$location[1]
-    y[i] <- all_microbes[[i]]$location[2]
-  }
-  boundary <- 15
-  bound_lim <- c(-boundary, boundary)
-  plot(x, y,
-    xlim = bound_lim, ylim = bound_lim,
-    col = c(rep("black", length(back)), rep("aquamarine4", length(general))),
-    pch = 20, main = main_title, cex = 0.5,
-    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
-  )
-  points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
-}
 
 
 
@@ -139,10 +103,10 @@ overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, a
     if (length(all_microbes) > 0) {
       x <- x[inside]
       y <- y[inside]
-      # angle_tab_1 <- angle.table(x, y)
+      # angle_tab_1 <- calulate_angle_table(x, y)
       xy_cord <- rbind(x, y)
-      angle_tab <- cal_angle_table(xy_cord)
-      distance_tab <- distance.table(x, y)
+      angle_tab <- calculate_angle_table(xy_cord)
+      distance_tab <- calculate_dist_table(x, y)
       all_microbes <- lapply(seq_along(all_microbes), function(k) {
         move(all_microbes[[k]], distance_tab[k, ], angle_tab[k, ], sd, radius, arc, ec, resource)
       })
@@ -192,27 +156,27 @@ overall_search <- function(sd) {
 
   par(mfrow = c(3, 3))
   all_microbes <- c(background_list, general_list)
-  loc.print(all_microbes, "Age = 0")
+  plot_loc_resource(all_microbes, "Age = 0")
   for (i in seq(interval, total_time, by = interval)) {
     all_microbes <- overall_simulation(all_microbes, interval, sd, birth_rate = birth_rate, death_rate = death_rate)
-    loc.print(all_microbes, paste("Age =", i + interval))
+    plot_loc_resource(all_microbes, paste("Age =", i + interval))
   }
 
 
   # background_list <- overall_simulation(background_list, 10, sd, birth_rate = birth_rate, death_rate = death_rate)
-  # loc.print(background_list, "Age = 20")
+  # plot_loc_resource(background_list, "Age = 20")
 
   # background_list <- overall_simulation(background_list, 10, sd)
-  # loc.print(background_list, "Age = 40")
+  # plot_loc_resource(background_list, "Age = 40")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 60")
+  # plot_loc_resource(background_list, "Age = 60")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 80")
+  # plot_loc_resource(background_list, "Age = 80")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 100")
+  # plot_loc_resource(background_list, "Age = 100")
 
   par(mfrow = c(1, 1))
 }
@@ -238,31 +202,31 @@ overall_search <- function(sd) {
 
   par(mfrow = c(3, 3))
   all_microbes <- c(background_list, general_list)
-  loc.print(all_microbes, "Age = 0")
+  plot_loc_resource(all_microbes, "Age = 0")
   for (i in seq(interval, total_time, by = interval)) {
     all_microbes <- overall_simulation(all_microbes, interval, sd,
       radius = 3, arc = pi / 6, ec = 2, resource = c(5, 5),
       birth_rate = birth_rate, death_rate = death_rate, capacity = 3000
     )
-    loc.print(all_microbes, paste("Age =", i + interval))
+    plot_loc_resource(all_microbes, paste("Age =", i + interval))
   }
   # sd, radius = 3, boundary = 20, arc = pi / 6, ec = 2, resource = c(5, 5),
   #                                st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 5000) {
 
   # background_list <- overall_simulation(background_list, 10, sd, birth_rate = birth_rate, death_rate = death_rate)
-  # loc.print(background_list, "Age = 20")
+  # plot_loc_resource(background_list, "Age = 20")
 
   # background_list <- overall_simulation(background_list, 10, sd)
-  # loc.print(background_list, "Age = 40")
+  # plot_loc_resource(background_list, "Age = 40")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 60")
+  # plot_loc_resource(background_list, "Age = 60")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 80")
+  # plot_loc_resource(background_list, "Age = 80")
 
   # background_list <- overall_simulation(background_list, 20, sd)
-  # loc.print(background_list, "Age = 100")
+  # plot_loc_resource(background_list, "Age = 100")
 
   par(mfrow = c(1, 1))
 }
@@ -303,14 +267,14 @@ simulation_real_data <- function() {
 
   par(mfrow = c(3, 3))
   all_microbes <- c(background_list, general_list)
-  loc.print(all_microbes, "Age = 0", resource = resource)
+  plot_loc_resource(all_microbes, "Age = 0", resource = resource)
   for (i in seq(interval, total_time, by = interval)) {
     all_microbes <- overall_simulation(all_microbes, interval,
       sd = sd,
       radius = 3, arc = pi / 6, ec = 10, resource = resource,
       birth_rate = birth_rate, death_rate = death_rate, capacity = capacity
     )
-    loc.print(all_microbes, paste("Age =", i + interval))
+    plot_loc_resource(all_microbes, paste("Age =", i + interval))
   }
 
   par(mfrow = c(1, 1))

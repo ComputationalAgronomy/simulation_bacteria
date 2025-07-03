@@ -1,55 +1,27 @@
-library(parallel)
 
 
+# Deprecated function, use `calculate_dist_table` instead
 calculate_dist <- function(i, m, n) {
   sqrt((m[i] - m[-i])^2 + (n[i] - n[-i])^2)
 }
 
-calculate_dist.2 <- function(i, xy_cord) {
-  xx <- (xy_cord[, i] - xy_cord[, -i])^2
-  sqrt(colSums(xx))
-}
-
-
+# Deprecated function, use `calculate_dist_table` instead
 distance.table.2 <- function(m, n) {
-  dist_1 <- sapply(seq_along(m), function(i) {
+  dist_temp <- sapply(seq_along(m), function(i) {
     calculate_dist(i, m, n)
   })
-  dist_1
-}
-
-distance.table.3 <- function(xy_cord, index, ncpu = 4) {
-  distance <- mclapply(index, mc.cores = ncpu, function(i) {
-    calculate_dist.2(i, xy_cord)
-  })
+  distance <- t(dist_temp)
   distance
 }
 
-
-time_trial_distance <- function() {
-  l <- 1e4
-  m <- runif(l)
-  n <- runif(l)
-  xy_cord <- rbind(m, n)
-
-  system.time({
-    distance <- matrix(NA, length(m), length(m) - 1)
-    for (i in seq_along(m)) {
-      distance[i, ] <- sqrt((m[i] - m[-i])^2 + (n[i] - n[-i])^2)
-      # distance[i, ] <- calculate_dist(i, m, n)
-    }
-  })
-
-
-  system.time({
-    dist_1 <- distance.table.2(m, n)
-  })
-  all.equal(distance, t(dist_1))
-
-
-  system.time({
-    dist_temp <- distance.table.3(xy_cord, index = seq_len(NCOL(xy_cord)), ncpu = 4)
-  })
-  dist_3 <- t(simplify2array(dist_temp))
-  all.equal(distance, dist_3)
+#' @export
+calculate_dist_table <- function(m, n) {
+  coords <- cbind(m, n)
+  dist_temp <- as.matrix(dist(coords))
+  # distance <- t(sapply(seq_len(NROW(dist_temp)), function(i) dist_temp[i, -i]))
+  # distance
+  num_points <- nrow(coords)
+  diag_indices <- seq.int(from = 1, by = num_points + 1, length.out = num_points)
+  vector_no_diag <- as.vector(dist_temp)[-diag_indices]
+  t(matrix(vector_no_diag, nrow = num_points - 1, ncol = num_points))
 }

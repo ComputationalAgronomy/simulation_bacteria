@@ -4,7 +4,6 @@ library(ggplot2)
 #' @importFrom ggplot2 geom_bar
 #' @importFrom ggplot2 ggtitle
 #' @export
-
 ## Get the distribution of all the microbes.
 age_print.microbe <- function(m) {
   a <- vector("numeric")
@@ -20,7 +19,8 @@ age_print.microbe <- function(m) {
 }
 
 ## Get the location of all the microbes.
-loc_print.microbe <- function(m, title) {
+#' @export
+plot_loc <- function(m, title) {
   a <- b <- vector("numeric")
   for (i in 1:length(m)) {
     a[i] <- c(m[[i]]$location[1])
@@ -40,6 +40,53 @@ loc_time_print.microbe <- function(m, id, time) {
   }
   return(plot(a, b, main = "age-loc distribution", xlab = "X", ylab = "Y", cex = 0.5, pch = 18))
 }
+
+#' @export
+plot_loc_two_microbes <- function(m, n, o) {
+  a <- b <- vector("numeric")
+  for (i in 1:length(m)) {
+    a[i] <- c(m[[i]]$location[1])
+    b[i] <- c(m[[i]]$location[2])
+  }
+  c <- d <- vector("numeric")
+  for (i in 1:length(n)) {
+    c[i] <- c(n[[i]]$location[1])
+    d[i] <- c(n[[i]]$location[2])
+  }
+  colors <- c(rep("blue", length(a)), rep("black", length(c)))
+  x <- c(a, c)
+  y <- c(b, d)
+  plot(x, y, col = colors, pch = 20, main = o)
+}
+
+#' @export
+plot_loc_resource <- function(all_microbes, main_title, resource = c(5, 5)) {
+  back <- list()
+  general <- list()
+  for (i in seq_along(all_microbes)) {
+    if (class(all_microbes[[i]])[2] == "background") {
+      back <- c(back, list(all_microbes[[i]]))
+    } else {
+      general <- c(general, list(all_microbes[[i]]))
+    }
+  }
+  all_microbes <- c(back, general)
+  x <- y <- vector("numeric")
+  for (i in seq_along(all_microbes)) {
+    x[i] <- all_microbes[[i]]$location[1]
+    y[i] <- all_microbes[[i]]$location[2]
+  }
+  boundary <- 15
+  bound_lim <- c(-boundary, boundary)
+  plot(x, y,
+    xlim = bound_lim, ylim = bound_lim,
+    col = c(rep("black", length(back)), rep("aquamarine4", length(general))),
+    pch = 20, main = main_title, cex = 0.5,
+    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
+  )
+  points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
+}
+
 
 
 microbe_generate <- function(n, t, st_birth, birth_rate, st_death, death_rate, capacity) {
