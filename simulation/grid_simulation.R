@@ -121,7 +121,7 @@ overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, a
     ## Death
     pop <- length(all_microbes)
     logic <- mclapply(all_microbes, death, st_death, death_rate, pop, capacity)
-    survive <- which(logic == "True")
+    survive <- which(logic == TRUE)
     all_microbes <- all_microbes[survive]
     if (length(all_microbes) == 0) {
       print(paste("All microbes die at i th iteration where i = ", iter))

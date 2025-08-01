@@ -101,7 +101,7 @@ microbe_generate <- function(n, t, st_birth, birth_rate, st_death, death_rate, c
     microbe_list <- c(microbe_list, lapply(microbe_list, birth, st_birth, birth_rate, length(microbe_list), capacity))
     microbe_list <- microbe_list[!is.na(microbe_list)]
     logic <- lapply(microbe_list, death, st_death, death_rate, length(microbe_list), capacity)
-    survive <- which(logic == "True")
+    survive <- which(logic == TRUE)
     microbe_list <- microbe_list[survive]
     id <- old <- x <- y <- parent <- amount <- average_age <- vector("numeric")
     l <- length(microbe_list)

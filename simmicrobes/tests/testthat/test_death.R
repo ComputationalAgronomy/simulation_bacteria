@@ -13,7 +13,7 @@ test_that("if the death rate is 0 under age 30", {
     i <- i + 1
   }
   logic <- lapply(microbe_list, death, st_death = 30, death_rate = 1)
-  expect_equal(sum(logic == "False"), 0)
+  expect_equal(sum(logic == FALSE), 0)
 })
 
 
@@ -30,7 +30,7 @@ test_that("if the death rate fits the model", {
   a <- vector("numeric")
   while (i <= 1000) {
     logic <- lapply(microbe_list, death, st_death = 30, 0.8, 10, 40)
-    a[i] <- sum(logic == "False")
+    a[i] <- sum(logic == FALSE)
     i <- i + 1
   }
   death_rate <- mean(a) / 10
