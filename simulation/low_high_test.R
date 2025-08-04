@@ -110,7 +110,7 @@ system.time({
 })
 
 
-png("Figure4_birth_death_coef.png", width = 3000, height = 3000, res = 300)
+png("Figure4_birth_death_coef.png", width = 4000, height = 4000, res = 300)
 par(mfrow = c(3, 3), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
 par(mfrow = c(4, 4), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
 
@@ -125,22 +125,50 @@ dev.off()
 
 
 
-
-
-logistic_curve <- function(x, r, K, N0) {
-  Nt <- K / (1 + ((K - N0) / N0) * exp(-r * x))
-  plot(x, Nt, type = "l", xlab = "Time", ylab = "Population Size", lty = 1, lwd = 5)
-  iter <- 1
-  while (iter < 10) {
-    mt <- microbe_test(100, 30, 1, 0.5, 1, 0, 1000)
-    lines(1:30, mt[, 1], type = "l", col = "lightblue", lty = 1, lwd = 2)
-    iter <- iter + 1
-  }
-  lines(x, Nt, type = "l", lty = 1, lwd = 5)
-  legend("topleft", legend = c("Theoretical", "Simulated"), col = c("black", "lightblue"), lty = c(1, 1))
+#########
+pal8 <- RColorBrewer::brewer.pal(8, "Dark2")
+generate_logistic_data <- function(total_iter, birth_rate, capacity, init_n) {
+  range_iter <- c(0, seq_len(total_iter))
+  theoretical_pop <- capacity / (1 + ((capacity - init_n) / init_n) * exp(-birth_rate * range_iter))
+  simulated <- mclapply(1:10, function(i) {
+    mt <- microbe_test(init_n, total_iter, 0, birth_rate, 0, 0, capacity = capacity)
+    c(init_n, mt[, 1])
+  }, mc.cores = getOption("mc.cores", 10L))
+  list(time = range_iter, birth_rate = birth_rate, capacity = capacity, theoretical = theoretical_pop, simulated = simulated)
 }
 
-## logistic_curve(1:30,0.5,1000,100)
+plot_logistic_curve <- function(sim_data) {
+  pal8 <- RColorBrewer::brewer.pal(8, "Dark2")
+  pal_set2 <- RColorBrewer::brewer.pal(8, "Set2")
+  plot(NA, type = "n",xlim = range(sim_data$time), ylim = c(0, sim_data$capacity),
+       xlab = "Iteration", ylab = "Population Size", main = sprintf("Birth = %.2f", sim_data$birth_rate))
+  for (sim in sim_data$simulated) {
+    lines(sim_data$time, sim, type = "l", lty = 1, lwd = 1, col = pal_set2[1])
+  }
+  lines(sim_data$time, sim_data$theoretical, type = "l", lty = 1, lwd = 2, col = pal8[4])
+  legend("bottomright", legend = c("Theoretical", "Simulated"), col = c(pal8[4], pal_set2[1]), bty = "n", lty = 1)
+}
+
+rates <- c(0.05, 0.1, 0.2, 0.3, 0.5, 0.95)
+results <- list()
+for (b in rates) {
+  iterations <- 50
+  if (b <= 0.1){
+    iterations <- 100
+  }
+  results[[sprintf("b=%.2f", b)]] <- generate_logistic_data(iterations, b, 1000, 100)
+}
+
+png("FigureS1_logistic_growth.png", width = 3000, height = 2000, res = 300)
+par(mfrow = c(2, 3), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+for (sim_data in results){
+  plot_logistic_curve(sim_data)
+}
+dev.off()
+
+
+sim_data <- generate_logistic_data(100, 0.05, 1000, 100)
+#########################
 
 
 
