@@ -7,78 +7,78 @@ load_all("simmicrobes")
 
 
 
-# general_movement <- function(n, t, boundary, sd = NA, radius, arc, ec) {
-#   general_list <- lapply(1:n, function(x) {
-#     new_microbe(speed = 1, location = c(runif(1, -5, 5), runif(1, -5, 5)))
-#   })
-#   iter <- 1
-#   while (iter <= t) {
-#     x <- y <- vector("numeric")
-#     for (i in seq_along(general_list)) {
-#       x[i] <- general_list[[i]]$location[1]
-#       y[i] <- general_list[[i]]$location[2]
-#     }
-#     inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-#     general_list <- general_list[inside]
-#     x <- x[inside]
-#     y <- y[inside]
-#     distance_tab <- calculate_dist_table(x, y)
-#     angle_tab <- calulate_angle_table(x, y)
-#     if (length(general_list) > 0) {
-#       general_list <- lapply(
-#         seq_along(general_list),
-#         function(k) {
-#           move(general_list[[k]], distance_tab[k, ],
-#             angle_tab[k, ],
-#             sd = NA, radius, arc, ec
-#           )
-#         }
-#       )
-#     } else {
-#       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-#       break
-#     }
-#     iter <- iter + 1
-#   }
-#   return(general_list)
-# }
+general_movement <- function(n, t, boundary, sd = NA, radius, arc, ec) {
+  general_list <- lapply(1:n, function(x) {
+    new_microbe(speed = 1, location = c(runif(1, -5, 5), runif(1, -5, 5)))
+  })
+  iter <- 1
+  while (iter <= t) {
+    x <- y <- vector("numeric")
+    for (i in seq_along(general_list)) {
+      x[i] <- general_list[[i]]$location[1]
+      y[i] <- general_list[[i]]$location[2]
+    }
+    inside <- which(abs(x) <= boundary & abs(y) <= boundary)
+    general_list <- general_list[inside]
+    x <- x[inside]
+    y <- y[inside]
+    distance_tab <- calculate_dist_table(x, y)
+    angle_tab <- calculate_angle_table(x, y)
+    if (length(general_list) > 0) {
+      general_list <- lapply(
+        seq_along(general_list),
+        function(k) {
+          move(general_list[[k]], distance_tab[k, ],
+            angle_tab[k, ],
+            sd = NA, radius, arc, ec
+          )
+        }
+      )
+    } else {
+      print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
+      break
+    }
+    iter <- iter + 1
+  }
+  return(general_list)
+}
 
 
-# background_movement <- function(n, t, boundary, sd, radius, arc, ec, resource) {
-#   background_list <- lapply(1:n, function(x) {
-#     background_microbe(speed = runif(1, 0, 1), location = c(runif(1, -1, 1), runif(1, -1, 1)))
-#   })
-#   iter <- 1
-#   while (iter <= t) {
-#     x <- y <- vector("numeric")
-#     for (i in seq_along(background_list)) {
-#       x[i] <- background_list[[i]]$location[1]
-#       y[i] <- background_list[[i]]$location[2]
-#     }
-#     inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-#     background_list <- background_list[inside]
-#     if (length(background_list) > 0) {
-#       x <- x[inside]
-#       y <- y[inside]
-#       angle_tab <- calulate_angle_table(x, y)
-#       distance_tab <- calculate_dist_table(x, y)
-#       background_list <- lapply(
-#         seq_along(background_list),
-#         function(k) {
-#           move(
-#             background_list[[k]], distance_tab[k, ],
-#             angle_tab[k, ], sd, radius, arc, ec, resource
-#           )
-#         }
-#       )
-#     } else {
-#       print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-#       break
-#     }
-#     iter <- iter + 1
-#   }
-#   return(background_list)
-# }
+background_movement <- function(n, t, boundary, sd, radius, arc, ec, resource) {
+  background_list <- lapply(1:n, function(x) {
+    background_microbe(speed = runif(1, 0, 1), location = c(runif(1, -1, 1), runif(1, -1, 1)))
+  })
+  iter <- 1
+  while (iter <= t) {
+    x <- y <- vector("numeric")
+    for (i in seq_along(background_list)) {
+      x[i] <- background_list[[i]]$location[1]
+      y[i] <- background_list[[i]]$location[2]
+    }
+    inside <- which(abs(x) <= boundary & abs(y) <= boundary)
+    background_list <- background_list[inside]
+    if (length(background_list) > 0) {
+      x <- x[inside]
+      y <- y[inside]
+      angle_tab <- calculate_angle_table(x, y)
+      distance_tab <- calculate_dist_table(x, y)
+      background_list <- lapply(
+        seq_along(background_list),
+        function(k) {
+          move(
+            background_list[[k]], distance_tab[k, ],
+            angle_tab[k, ], sd, radius, arc, ec, resource
+          )
+        }
+      )
+    } else {
+      print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
+      break
+    }
+    iter <- iter + 1
+  }
+  return(background_list)
+}
 
 
 
@@ -130,24 +130,6 @@ overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, a
     iter <- iter + 1
   }
   return(all_microbes)
-}
-
-generate_init_square <- function(boundary) {
-  c(runif(1, -boundary, boundary), runif(1, -boundary, boundary))
-}
-
-generate_init_circle <- function(center, radius) {
-  if (length(center) != 2 || !is.numeric(center)) {
-    stop("'center' must be a numeric vector of length 2.", call. = FALSE)
-  }
-  if (radius < 0 || !is.numeric(radius)) {
-    stop("'radius' must be a non-negative number.", call. = FALSE)
-  }
-
-  theta <- stats::runif(1, 0, 2 * pi)
-  r_scaled <- radius * sqrt(stats::runif(1))
-
-  c(x = center[1] + r_scaled * cos(theta), y = center[2] + r_scaled * sin(theta))
 }
 
 
@@ -293,6 +275,3 @@ simulation_real_data <- function() {
 
 
 
-
-ncpu <- floor(detectCores() * 0.75)
-options(mc.cores = ncpu)

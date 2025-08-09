@@ -18,19 +18,6 @@ age_print.microbe <- function(m) {
   return(p)
 }
 
-## Get the location of all the microbes.
-#' @export
-plot_loc <- function(m, title) {
-  a <- b <- vector("numeric")
-  for (i in 1:length(m)) {
-    a[i] <- c(m[[i]]$location[1])
-    b[i] <- c(m[[i]]$location[2])
-    c <- cbind(a, b)
-  }
-  plot(c, xlim = c(-5, 10), ylim = c(-5, 10), main = title, xlab = "X", ylab = "Y", cex = 0.5, pch = 19)
-  points(5, 5, col = "red", pch = 19, cex = 2)
-}
-
 ## Track the location of an individual.
 loc_time_print.microbe <- function(m, id, time) {
   a <- b <- vector("numeric")
@@ -41,23 +28,55 @@ loc_time_print.microbe <- function(m, id, time) {
   return(plot(a, b, main = "age-loc distribution", xlab = "X", ylab = "Y", cex = 0.5, pch = 18))
 }
 
+## Get the location of all the microbes.
 #' @export
-plot_loc_two_microbes <- function(m, n, o) {
-  a <- b <- vector("numeric")
-  for (i in 1:length(m)) {
-    a[i] <- c(m[[i]]$location[1])
-    b[i] <- c(m[[i]]$location[2])
-  }
-  c <- d <- vector("numeric")
-  for (i in 1:length(n)) {
-    c[i] <- c(n[[i]]$location[1])
-    d[i] <- c(n[[i]]$location[2])
-  }
-  colors <- c(rep("blue", length(a)), rep("black", length(c)))
-  x <- c(a, c)
-  y <- c(b, d)
-  plot(x, y, col = colors, pch = 20, main = o)
+plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab = "", ylab = "", cex = 0.5, pch = 19,
+                     xaxt = "n", yaxt = "n", resources = c(5, 5), ...) {
+  loc_x <- sapply(microbes, function(m) m$location[1])
+  loc_y <- sapply(microbes, function(m) m$location[2])
+  # locations <- cbind(loc_x, loc_y)
+  plot(loc_x, loc_y,
+    main = title, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch,
+    xaxt = xaxt, yaxt = yaxt, ...
+  )
+  points(resources[1], resources[2], col = "red", pch = 19, cex = 2)
 }
+
+
+#' @export
+plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab = "", ylab = "", cex = 0.5, pch = 19, xaxt = "n", yaxt = "n", ...) {
+  # a <- b <- vector("numeric")
+  # for (i in 1:length(microbe_active)) {
+  #   a[i] <- c(microbe_active[[i]]$location[1])
+  #   b[i] <- c(microbe_active[[i]]$location[2])
+  # }
+  # c <- d <- vector("numeric")
+  # for (i in 1:length(microbe_background)) {
+  #   c[i] <- c(microbe_background[[i]]$location[1])
+  #   d[i] <- c(microbe_background[[i]]$location[2])
+  # }
+  # loc_x_a <- sapply(microbe_active, function(m) m$location[1])
+  # loc_y_a <- sapply(microbe_active, function(m) m$location[2])
+  # loc_x_b <- sapply(microbe_background, function(m) m$location[1])
+  # loc_y_b <- sapply(microbe_background, function(m) m$location[2])
+  loc_x <- c(
+    sapply(microbe_active, function(m) m$location[1]),
+    sapply(microbe_background, function(m) m$location[1])
+  )
+  loc_y <- c(
+    sapply(microbe_active, function(m) m$location[2]),
+    sapply(microbe_background, function(m) m$location[2])
+  )
+  xlim <- range(loc_x)
+  ylim <- range(loc_y)
+
+  cpal <- RColorBrewer::brewer.pal(8, "Dark2")
+  col <- c(rep(cpal[2], length(microbe_active)), rep("black", length(microbe_background)))
+  plot(loc_x, loc_y, col = col, main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt, ...)
+  legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], "black"), pch = 19, cex = 0.8, bty = "n")
+}
+
+
 
 #' @export
 plot_loc_resource <- function(all_microbes, main_title, resource = c(5, 5)) {

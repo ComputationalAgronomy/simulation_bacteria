@@ -100,6 +100,7 @@ rates <- c(0.25, 0.5, 0.75)
 rates <- c(0.1, 0.5, 0.9)
 rates <- c(0.5, 1, 10, 50)
 rates <- c(0.05, 0.25, 0.5, 0.75, 0.95)
+rates <- c(0.1, 0.3, 0.7, 0.9)  # MS Figure 4
 
 system.time({
   results <- grid_search_rates(
