@@ -71,6 +71,8 @@ ANGLE_THRESHOLD <- pi/180/2
 
 }
 
+# TODO(SW): Test a new version that focus on the column/row sum from the angle table
+
 # Helper function to apply repulsion from neighbors and sample a final angle.
 # This vectorized implementation is much more efficient than the original loops.
 DEG_TO_RAD <- pi / 180
@@ -128,7 +130,7 @@ move.background <- function(m, distance_table, angle_table, sd, radius, arc, ec,
     angle_ins <- angle_table[which(distance_table <= radius)]
     theta <- .apply_repulsion_and_sample_angle(prob, ori, angle_ins, arc, ec)
   }
-  if (is.na(theta) == T) {
+  if (is.na(theta) == TRUE) {
     m$location[1] <- m$location[1]
     m$location[2] <- m$location[2]
   } else {
@@ -150,7 +152,7 @@ move.general <- function(m, distance_table, angle_table, sd = NA, radius, arc, e
     angle_ins <- angle_table[which(distance_table <= radius)]
     theta <- .apply_repulsion_and_sample_angle(prob, ori, angle_ins, arc, ec)
   }
-  if (is.na(theta) == T) {
+  if (is.na(theta) == TRUE) {
     m$location[1] <- m$location[1]
     m$location[2] <- m$location[2]
   } else {
