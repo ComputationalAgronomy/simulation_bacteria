@@ -169,7 +169,7 @@ lines <- setNames(seq(0, -100, by = -24), names(results_all))
 
 png("Figure6_movement_density.png", width = 5000, height = 5000, res = 300)
 
-par(mfrow = c(5, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 5, 0), pty = "s")
+par(mfrow = c(5, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 5, 0))
 for(param in names(results_all)) {
 
   for (title in names(results_all[[param]])) {

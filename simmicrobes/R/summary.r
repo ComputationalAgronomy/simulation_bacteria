@@ -72,7 +72,7 @@ plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab
 
   cpal <- RColorBrewer::brewer.pal(8, "Dark2")
   col <- c(rep(cpal[2], length(microbe_active)), rep("black", length(microbe_background)))
-  plot(loc_x, loc_y, col = col, main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt, ...)
+  eqscplot(loc_x, loc_y, col = col, main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt, ...)
   # eqscplot
   legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], "black"), pch = 19, cex = 0.8, bty = "n")
 }
