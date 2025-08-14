@@ -1,233 +1,131 @@
 library(devtools)
 library(parallel)
 load_all("simmicrobes")
+source("simulation/simulation_init.R")
+source("simulation/update_microbe.R")
 
+ncpus <- min(12, floor(detectCores() * 0.8))
+options(mc.cores = ncpus)
 
+overall_simulation <- function(microbe_active, microbe_background, total_iter, sample_interval, sd = 1, radius = 2, arc = pi / 6, ec = 1.2, resource = c(5, 5), st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 10000) {
 
+  microbe_table <- list()
+  microbe_results <- list()
 
+  n_background <- length(microbe_background)
 
+  title <- sprintf("Age = %s", 0)
+  ids <- sapply(microbe_list, "[[", "id")
+  ages <- sapply(microbe_list, "[[", "age")
+  microbe_table[[title]] <- data.frame(id = ids, age = ages)
+  microbe_list <- c(microbe_background, microbe_active)
+  microbe_results[[title]] <- microbe_list
 
-general_movement <- function(n, t, boundary, sd = NA, radius, arc, ec) {
-  general_list <- lapply(1:n, function(x) {
-    new_microbe(speed = 1, location = c(runif(1, -5, 5), runif(1, -5, 5)))
-  })
-  iter <- 1
-  while (iter <= t) {
-    x <- y <- vector("numeric")
-    for (i in seq_along(general_list)) {
-      x[i] <- general_list[[i]]$location[1]
-      y[i] <- general_list[[i]]$location[2]
-    }
-    inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-    general_list <- general_list[inside]
-    x <- x[inside]
-    y <- y[inside]
-    distance_tab <- calculate_dist_table(x, y)
-    angle_tab <- calculate_angle_table(x, y)
-    if (length(general_list) > 0) {
-      general_list <- lapply(
-        seq_along(general_list),
-        function(k) {
-          move(general_list[[k]], distance_tab[k, ],
-            angle_tab[k, ],
-            sd = NA, radius, arc, ec
-          )
-        }
-      )
-    } else {
-      print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-      break
-    }
-    iter <- iter + 1
-  }
-  return(general_list)
-}
-
-
-background_movement <- function(n, t, boundary, sd, radius, arc, ec, resource) {
-  background_list <- lapply(1:n, function(x) {
-    background_microbe(speed = runif(1, 0, 1), location = c(runif(1, -1, 1), runif(1, -1, 1)))
-  })
-  iter <- 1
-  while (iter <= t) {
-    x <- y <- vector("numeric")
-    for (i in seq_along(background_list)) {
-      x[i] <- background_list[[i]]$location[1]
-      y[i] <- background_list[[i]]$location[2]
-    }
-    inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-    background_list <- background_list[inside]
-    if (length(background_list) > 0) {
-      x <- x[inside]
-      y <- y[inside]
-      angle_tab <- calculate_angle_table(x, y)
-      distance_tab <- calculate_dist_table(x, y)
-      background_list <- lapply(
-        seq_along(background_list),
-        function(k) {
-          move(
-            background_list[[k]], distance_tab[k, ],
-            angle_tab[k, ], sd, radius, arc, ec, resource
-          )
-        }
-      )
-    } else {
-      print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-      break
-    }
-    iter <- iter + 1
-  }
-  return(background_list)
-}
-
-
-
-
-
-
-overall_simulation <- function(all_microbes, t, sd, radius = 3, boundary = 20, arc = pi / 6, ec = 2, resource = c(5, 5),
-                               st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 2000) {
-  iter <- 1
-  while (iter <= t) {
-    print(paste("Iteration: ", iter, "  T:", t))
+  for (iter in seq_len(total_iter)) {
+    print(paste("Iteration: ", iter, "  Total:", total_iter))
     ## Age
-    all_microbes <- lapply(all_microbes, age)
+    microbe_list <- lapply(microbe_list, age)
+    microbe_list <- update_microbe_movement(microbe_list, sd, radius, arc, ec, resource)
+    microbe_active <- microbe_list[(n_background+1):length(microbe_list)]
+    microbe_active <- update_microbe_birth_death(microbe_active, st_birth, birth_rate, st_death, death_rate, capacity)
+    microbe_list <- c(microbe_background, microbe_active)
     ## Move
-    x <- y <- vector("numeric")
-    for (i in seq_along(all_microbes)) {
-      x[i] <- all_microbes[[i]]$location[1]
-      y[i] <- all_microbes[[i]]$location[2]
-    }
-    inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-    all_microbes <- all_microbes[inside]
-    if (length(all_microbes) > 0) {
-      x <- x[inside]
-      y <- y[inside]
-      # angle_tab_1 <- calulate_angle_table(x, y)
-      xy_cord <- rbind(x, y)
-      angle_tab <- calculate_angle_table(x, y)
-      distance_tab <- calculate_dist_table(x, y)
-      all_microbes <- lapply(seq_along(all_microbes), function(k) {
-        move(all_microbes[[k]], distance_tab[k, ], angle_tab[k, ], sd, radius, arc, ec, resource)
-      })
-    } else {
-      print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-      break
-    }
-    ## Birth
-    pop <- length(all_microbes)
-    all_microbes <- c(all_microbes, mclapply(all_microbes, birth, st_birth, birth_rate, pop, capacity))
-    all_microbes <- all_microbes[!is.na(all_microbes)]
-    ## Death
-    pop <- length(all_microbes)
-    logic <- mclapply(all_microbes, death, st_death, death_rate, pop, capacity)
-    survive <- which(logic == TRUE)
-    all_microbes <- all_microbes[survive]
-    if (length(all_microbes) == 0) {
+    # x <- y <- vector("numeric")
+    # for (i in seq_along(microbe_list)) {
+    #   x[i] <- microbe_list[[i]]$location[1]
+    #   y[i] <- microbe_list[[i]]$location[2]
+    # }
+    # inside <- which(abs(x) <= boundary & abs(y) <= boundary)
+    # microbe_list <- microbe_list[inside]
+    # if (length(microbe_list) > 0) {
+    #   x <- x[inside]
+    #   y <- y[inside]
+    #   # angle_tab_1 <- calulate_angle_table(x, y)
+    #   xy_cord <- rbind(x, y)
+    #   angle_tab <- calculate_angle_table(x, y)
+    #   distance_tab <- calculate_dist_table(x, y)
+    #   microbe_list <- lapply(seq_along(microbe_list), function(k) {
+    #     move(microbe_list[[k]], distance_tab[k, ], angle_tab[k, ], sd, radius, arc, ec, resource)
+    #   })
+    # } else {
+    #   print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
+    #   break
+    # }
+    # while (iter <= t) {
+    # microbe_list <- lapply(microbe_list, age)
+    # logic <- lapply(microbe_list, death, st_death, death_rate, length(microbe_list), capacity)
+    # survive <- which(logic == TRUE)
+    # microbe_list <- microbe_list[survive]
+    # new_microbe <- lapply(microbe_list, birth, st_birth, birth_rate, length(microbe_list), capacity)
+    # new_microbe <- new_microbe[!is.na(new_microbe)]
+    # temp_total_length <- length(microbe_list) + length(new_microbe)
+    # temp_total_length
+
+    # if (temp_total_length > capacity) {
+    #   new_microbe <- sample(new_microbe, capacity - length(microbe_list), replace = FALSE)
+    # }
+    # microbe_list <- c(microbe_list, new_microbe)
+
+    l <- length(microbe_list)
+    title <- sprintf("Age = %s", iter)
+    if (l == 0) {
       print(paste("All microbes die at i th iteration where i = ", iter))
       break
+    } else {
+      ids <- sapply(microbe_list, "[[", "id")
+      ages <- sapply(microbe_list, "[[", "age")
+      microbe_table[[title]] <- data.frame(id = ids, age = ages)
     }
-    iter <- iter + 1
+    if (iter %% sample_interval == 0 || iter == total_iter) {
+      microbe_results[[title]] <- microbe_list
+    }
   }
-  return(all_microbes)
+  return(list(microbe_table = microbe_table, microbe_results = microbe_results))
 }
 
 
-overall_search <- function(sd) {
+overall_search <- function(total_iter, sample_interval, sd = 1, radius = 2, arc = pi / 6, ec = 2, capacity = 10000) {
   init_bound_active <- 1
-  init_bound_bg <- 10
-  birth_rate <- 0.5
+  init_bound_bg <- 15
+  birth_rate <- 0.3
   death_rate <- 0.1
+  resource <- c(5, 5)
+  # capacity <- 5000
 
-  background_list <- lapply(1:100, function(x) {
-    background_microbe(speed = runif(1, 0, 1), location = generate_init_square(init_bound_active))
+  microbe_active <- lapply(1:100, function(x) {
+    background_microbe(speed = runif(1, 0, 1), location = generate_init_circle(c(0, 0), radius = init_bound_active))
   })
 
-  general_list <- lapply(1:500, function(x) {
-    new_microbe(speed = runif(1, 0, 1), location = generate_init_square(init_bound_bg))
+  microbe_background <- lapply(1:500, function(x) {
+    new_microbe(speed = runif(1, 0, 1), location = generate_init_circle(c(0, 0), radius = init_bound_bg))
   })
 
 
-  interval <- 3
-  total_time <- 100
+  results <- overall_simulation(
+    microbe_active = microbe_active, microbe_background = microbe_background,
+    total_iter = 50, sample_interval = 5,
+    sd = 1, radius = 2, arc = pi / 6, ec = 2,
+    resource = resource,
+    st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 500
+  )
 
-  par(mfrow = c(3, 3))
-  all_microbes <- c(background_list, general_list)
-  plot_loc_resource(all_microbes, "Age = 0")
-  for (i in seq(interval, total_time, by = interval)) {
-    all_microbes <- overall_simulation(all_microbes, interval, sd, birth_rate = birth_rate, death_rate = death_rate)
-    plot_loc_resource(all_microbes, paste("Age =", i))
-  }
-
-
-  # background_list <- overall_simulation(background_list, 10, sd, birth_rate = birth_rate, death_rate = death_rate)
-  # plot_loc_resource(background_list, "Age = 20")
-
-  # background_list <- overall_simulation(background_list, 10, sd)
-  # plot_loc_resource(background_list, "Age = 40")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 60")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 80")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 100")
-
-  par(mfrow = c(1, 1))
+  return(results)
 }
 
-
-overall_search <- function(sd) {
-  init_bound_active <- 1
-  init_bound_bg <- 10
-  birth_rate <- 0.5
-  death_rate <- 0.1
-
-  background_list <- lapply(1:100, function(x) {
-    background_microbe(speed = runif(1, 0, 1), location = generate_init_square(init_bound_active))
-  })
-
-  general_list <- lapply(1:500, function(x) {
-    new_microbe(speed = runif(1, 0, 1), location = generate_init_square(init_bound_bg))
-  })
+results <- overall_search(total_iter = 50, sample_interval = 5, sd = 1, radius = 2, arc = pi / 6, ec = 1, capacity = 1000)
 
 
-  interval <- 3
-  total_time <- 100
+png("FigureXX_combined.png", width = 5000, height = 5000, res = 300)
+par(mfrow = c(3, 3), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+par(mfrow = c(4, 4), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
 
-  par(mfrow = c(3, 3))
-  all_microbes <- c(background_list, general_list)
-  plot_loc_resource(all_microbes, "Age = 0")
-  for (i in seq(interval, total_time, by = interval)) {
-    all_microbes <- overall_simulation(all_microbes, interval, sd,
-      radius = 3, arc = pi / 6, ec = 2, resource = c(5, 5),
-      birth_rate = birth_rate, death_rate = death_rate, capacity = 3000
-    )
-    plot_loc_resource(all_microbes, paste("Age =", i))
-  }
-  # sd, radius = 3, boundary = 20, arc = pi / 6, ec = 2, resource = c(5, 5),
-  #                                st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 5000) {
-
-  # background_list <- overall_simulation(background_list, 10, sd, birth_rate = birth_rate, death_rate = death_rate)
-  # plot_loc_resource(background_list, "Age = 20")
-
-  # background_list <- overall_simulation(background_list, 10, sd)
-  # plot_loc_resource(background_list, "Age = 40")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 60")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 80")
-
-  # background_list <- overall_simulation(background_list, 20, sd)
-  # plot_loc_resource(background_list, "Age = 100")
-
-  par(mfrow = c(1, 1))
+fig_each <- ceiling(sqrt(length(results[["microbe_results"]])))
+par(mfrow = c(fig_each, fig_each), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+for (name in names(results[["microbe_results"]])) {
+  res <- results[["microbe_results"]][[name]]
+  plot_loc_resource(res, name, resource = resource)
 }
-
+dev.off()
 
 
 
@@ -257,21 +155,17 @@ simulation_real_data <- function() {
   total_time <- 100
 
   par(mfrow = c(3, 3))
-  all_microbes <- c(background_list, general_list)
-  plot_loc_resource(all_microbes, "Age = 0", resource = resource)
+  microbe_list <- c(background_list, general_list)
+  plot_loc_resource(microbe_list, "Age = 0", resource = resource)
   for (i in seq(interval, total_time, by = interval)) {
-    all_microbes <- overall_simulation(all_microbes, interval,
+    microbe_list <- overall_simulation(microbe_list, interval,
       sd = sd,
       radius = 3, arc = pi / 6, ec = 2, resource = resource,
       birth_rate = birth_rate, death_rate = death_rate, capacity = capacity
     )
-    plot_loc_resource(all_microbes, paste("Age =", i), resource = resource)
-    abline(v=0, col=2)
+    plot_loc_resource(microbe_list, paste("Age =", i), resource = resource)
+    abline(v = 0, col = 2)
   }
 
   par(mfrow = c(1, 1))
 }
-
-
-
-

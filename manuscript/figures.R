@@ -23,6 +23,7 @@ x <- seq(0, 2 * pi, length.out = 365)
 # }
 # dev.off()
 
+
 ## Density based movement mechanism
 png("Figure3_density_based_movement.png", width = 2000, height = 2000, res = 300)
 par(mar = c(0,0,0,0), lwd = 1.5)

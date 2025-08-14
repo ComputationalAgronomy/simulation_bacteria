@@ -28,6 +28,7 @@ loc_time_print.microbe <- function(m, id, time) {
   return(plot(a, b, main = "age-loc distribution", xlab = "X", ylab = "Y", cex = 0.5, pch = 18))
 }
 
+
 ## Get the location of all the microbes.
 #' @export
 plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab = "", ylab = "", cex = 0.5, pch = 19,
@@ -43,6 +44,24 @@ plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab =
 }
 
 
+# Plotting function for population dynamics
+#' @export
+plot_population <- function(time, population, pop_capacity, res_name) {
+  rates <- as.numeric(
+    str_split(sub("b=([0-9.]+)_d=([0-9.]+)", "\\1 \\2", res_name), " ")[[1]]
+  )
+  main <- paste("birth =", rates[1], ", death =", rates[2])
+  # main <- gsub("_", ", ", main)
+  plot(time, population,
+    type = "l", lwd = 2, xlab = "Iteration", ylab = "Population size", ylim = c(0, pop_capacity),
+    main = main
+  )
+}
+
+
+# Plotting function for two types of microbes.
+# Active microbes: Moving
+# Background microbes: Stationary
 #' @export
 plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab = "", ylab = "", cex = 0.5, pch = 19, xaxt = "n", yaxt = "n", ...) {
   # a <- b <- vector("numeric")
