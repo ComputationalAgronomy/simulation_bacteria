@@ -99,7 +99,8 @@ DEG_TO_RAD <- pi / 180
     # Apply repulsion penalty in a single vectorized step
     # prob[indices_to_penalize] <- prob[indices_to_penalize] / ec
     index <- as.numeric(names(indices_to_penalize))
-    prob[index] <- prob[index] / (ec^indices_to_penalize)
+    # prob[index] <- prob[index] / (ec^(indices_to_penalize))
+    prob[index] <- prob[index] / (ec^log(indices_to_penalize))
   }
 
   # Sample the final angle from the (potentially modified) probability distribution

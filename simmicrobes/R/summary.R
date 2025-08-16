@@ -1,4 +1,7 @@
 library(ggplot2)
+library(RColorBrewer)
+library(MASS)
+
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 geom_bar
@@ -36,11 +39,14 @@ plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab =
   loc_x <- sapply(microbes, function(m) m$location[1])
   loc_y <- sapply(microbes, function(m) m$location[2])
   # locations <- cbind(loc_x, loc_y)
+  cpal <- RColorBrewer::brewer.pal(8, "Dark2")
   plot(loc_x, loc_y,
-    main = title, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch,
-    xaxt = xaxt, yaxt = yaxt, ...
+    main = title, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab,
+    cex = cex, pch = pch, col = cpal[1],
+    xaxt = xaxt, yaxt = yaxt, bty = "n", ...
   )
   points(resources[1], resources[2], col = "red", pch = 19, cex = 2)
+  legend("topleft", legend = c("Active Microbes", "Resource"), col = c(cpal[1], "red"), pch = 19, cex = 0.8, bty = "n")
 }
 
 
@@ -62,36 +68,35 @@ plot_population <- function(time, population, pop_capacity, res_name) {
 # Plotting function for two types of microbes.
 # Active microbes: Moving
 # Background microbes: Stationary
+#' @importFrom graphics legend points plot
+#' @importFrom MASS eqscplot
 #' @export
 plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab = "", ylab = "", cex = 0.5, pch = 19, xaxt = "n", yaxt = "n", ...) {
-  # a <- b <- vector("numeric")
-  # for (i in 1:length(microbe_active)) {
-  #   a[i] <- c(microbe_active[[i]]$location[1])
-  #   b[i] <- c(microbe_active[[i]]$location[2])
-  # }
-  # c <- d <- vector("numeric")
-  # for (i in 1:length(microbe_background)) {
-  #   c[i] <- c(microbe_background[[i]]$location[1])
-  #   d[i] <- c(microbe_background[[i]]$location[2])
-  # }
-  # loc_x_a <- sapply(microbe_active, function(m) m$location[1])
-  # loc_y_a <- sapply(microbe_active, function(m) m$location[2])
-  # loc_x_b <- sapply(microbe_background, function(m) m$location[1])
-  # loc_y_b <- sapply(microbe_background, function(m) m$location[2])
+
   loc_x <- c(
-    sapply(microbe_active, function(m) m$location[1]),
-    sapply(microbe_background, function(m) m$location[1])
+    sapply(microbe_background, function(m) m$location[1]),
+    sapply(microbe_active, function(m) m$location[1])
   )
   loc_y <- c(
-    sapply(microbe_active, function(m) m$location[2]),
-    sapply(microbe_background, function(m) m$location[2])
+    sapply(microbe_background, function(m) m$location[2]),
+    sapply(microbe_active, function(m) m$location[2])
   )
-  xlim <- range(loc_x)
-  ylim <- range(loc_y)
+  lim_max <- max(abs(loc_x), abs(loc_y))
+  # xlim <- range(loc_x)
+  # ylim <- range(loc_y)
+  bound_lim <- c(-lim_max, lim_max)
+  # xlim <- range(loc_x)
+  # ylim <- range(loc_y)
+  # xlim <- c(-lim_max, lim_max)
+  # ylim <- c(-lim_max, lim_max)
 
   cpal <- RColorBrewer::brewer.pal(8, "Dark2")
-  col <- c(rep(cpal[2], length(microbe_active)), rep("black", length(microbe_background)))
-  eqscplot(loc_x, loc_y, col = col, main = main, xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt, ...)
+  col <- c(rep(cpal[1], length(microbe_background)), rep(cpal[2], length(microbe_active)))
+  eqscplot(loc_x, loc_y, col = col, main = main,
+  xlim = bound_lim, ylim = bound_lim, xlab = xlab, ylab = ylab,
+  cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt,
+  bty="n",
+  ...)
   # eqscplot
   legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], "black"), pch = 19, cex = 0.8, bty = "n")
 }
@@ -99,31 +104,38 @@ plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab
 
 
 #' @export
-plot_loc_resource <- function(all_microbes, main_title, resource = c(5, 5)) {
-  back <- list()
+plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary = 15) {
+  active <- list()
   general <- list()
-  for (i in seq_along(all_microbes)) {
-    if (class(all_microbes[[i]])[2] == "background") {
-      back <- c(back, list(all_microbes[[i]]))
+  for (m in all_microbes) {
+    if ("background" %in% class(m)) {
+      active <- c(active, list(m))
     } else {
-      general <- c(general, list(all_microbes[[i]]))
+      general <- c(general, list(m))
     }
   }
-  all_microbes <- c(back, general)
-  x <- y <- vector("numeric")
-  for (i in seq_along(all_microbes)) {
-    x[i] <- all_microbes[[i]]$location[1]
-    y[i] <- all_microbes[[i]]$location[2]
-  }
-  boundary <- 15
+  all_microbes <- c(general, active)
+  loc_x <- sapply(all_microbes, function(m) m$location[1])
+  loc_y <- sapply(all_microbes, function(m) m$location[2])
+
+  cpal <- RColorBrewer::brewer.pal(8, "Dark2")
   bound_lim <- c(-boundary, boundary)
-  plot(x, y,
+  lim_max <- max(abs(loc_x), abs(loc_y))
+  # xlim <- range(loc_x)
+  # ylim <- range(loc_y)
+  bound_lim <- c(-lim_max, lim_max)
+  # ylim <- c(-lim_max, lim_max)
+
+  plot(loc_x, loc_y,
     xlim = bound_lim, ylim = bound_lim,
-    col = c(rep("black", length(back)), rep("aquamarine4", length(general))),
-    pch = 20, main = main_title, cex = 0.5,
+    col = c(rep(cpal[1], length(general)), rep(cpal[2], length(active))),
+    pch = 20, main = main, cex = 0.5,
     xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
   )
   points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
+  legend("topleft", legend = c("Background Microbes", "Active Microbes", "Resources"),
+  col = c(cpal[1:2], "red"), pch = 19, cex = 0.8, bty = "n")
+
 }
 
 

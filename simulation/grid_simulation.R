@@ -7,64 +7,34 @@ source("simulation/update_microbe.R")
 ncpus <- min(12, floor(detectCores() * 0.8))
 options(mc.cores = ncpus)
 
-overall_simulation <- function(microbe_active, microbe_background, total_iter, sample_interval, sd = 1, radius = 2, arc = pi / 6, ec = 1.2, resource = c(5, 5), st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 10000) {
 
+overall_simulation <- function(
+    microbe_active, microbe_background,
+    total_iter, sample_interval,
+    sd = 1, radius = 2, arc = pi / 6, ec = 1.2, resource = c(5, 5),
+    st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 1000) {
   microbe_table <- list()
   microbe_results <- list()
 
-  n_background <- length(microbe_background)
-
   title <- sprintf("Age = %s", 0)
+  microbe_list <- c(microbe_background, microbe_active)
+  n_background <- length(microbe_background)
+  range_microbe_background <- 1:n_background
+  range_microbe_active <- (n_background + 1):length(microbe_list)
+
   ids <- sapply(microbe_list, "[[", "id")
   ages <- sapply(microbe_list, "[[", "age")
   microbe_table[[title]] <- data.frame(id = ids, age = ages)
-  microbe_list <- c(microbe_background, microbe_active)
   microbe_results[[title]] <- microbe_list
 
   for (iter in seq_len(total_iter)) {
-    print(paste("Iteration: ", iter, "  Total:", total_iter))
+    # print(paste("Iteration: ", iter, "  Total:", total_iter))
     ## Age
     microbe_list <- lapply(microbe_list, age)
     microbe_list <- update_microbe_movement(microbe_list, sd, radius, arc, ec, resource)
-    microbe_active <- microbe_list[(n_background+1):length(microbe_list)]
+    microbe_active <- microbe_list[range_microbe_active]
     microbe_active <- update_microbe_birth_death(microbe_active, st_birth, birth_rate, st_death, death_rate, capacity)
-    microbe_list <- c(microbe_background, microbe_active)
-    ## Move
-    # x <- y <- vector("numeric")
-    # for (i in seq_along(microbe_list)) {
-    #   x[i] <- microbe_list[[i]]$location[1]
-    #   y[i] <- microbe_list[[i]]$location[2]
-    # }
-    # inside <- which(abs(x) <= boundary & abs(y) <= boundary)
-    # microbe_list <- microbe_list[inside]
-    # if (length(microbe_list) > 0) {
-    #   x <- x[inside]
-    #   y <- y[inside]
-    #   # angle_tab_1 <- calulate_angle_table(x, y)
-    #   xy_cord <- rbind(x, y)
-    #   angle_tab <- calculate_angle_table(x, y)
-    #   distance_tab <- calculate_dist_table(x, y)
-    #   microbe_list <- lapply(seq_along(microbe_list), function(k) {
-    #     move(microbe_list[[k]], distance_tab[k, ], angle_tab[k, ], sd, radius, arc, ec, resource)
-    #   })
-    # } else {
-    #   print(paste("All microbes move out of the boundary at i th iteration where i = ", iter))
-    #   break
-    # }
-    # while (iter <= t) {
-    # microbe_list <- lapply(microbe_list, age)
-    # logic <- lapply(microbe_list, death, st_death, death_rate, length(microbe_list), capacity)
-    # survive <- which(logic == TRUE)
-    # microbe_list <- microbe_list[survive]
-    # new_microbe <- lapply(microbe_list, birth, st_birth, birth_rate, length(microbe_list), capacity)
-    # new_microbe <- new_microbe[!is.na(new_microbe)]
-    # temp_total_length <- length(microbe_list) + length(new_microbe)
-    # temp_total_length
-
-    # if (temp_total_length > capacity) {
-    #   new_microbe <- sample(new_microbe, capacity - length(microbe_list), replace = FALSE)
-    # }
-    # microbe_list <- c(microbe_list, new_microbe)
+    microbe_list <- c(microbe_list[range_microbe_background], microbe_active)
 
     l <- length(microbe_list)
     title <- sprintf("Age = %s", iter)
@@ -84,48 +54,124 @@ overall_simulation <- function(microbe_active, microbe_background, total_iter, s
 }
 
 
-overall_search <- function(total_iter, sample_interval, sd = 1, radius = 2, arc = pi / 6, ec = 2, capacity = 10000) {
+grid_search <- function(
+    total_iter, sample_interval,
+    sd = 1, radius = 2, arc = pi / 6, ec = 2,
+    capacity = 1000, resource = c(5, 5)) {
+
   init_bound_active <- 1
   init_bound_bg <- 15
+
   birth_rate <- 0.3
   death_rate <- 0.1
-  resource <- c(5, 5)
-  # capacity <- 5000
 
   microbe_active <- lapply(1:100, function(x) {
     background_microbe(speed = runif(1, 0, 1), location = generate_init_circle(c(0, 0), radius = init_bound_active))
   })
 
-  microbe_background <- lapply(1:500, function(x) {
+  microbe_background <- lapply(1:1000, function(x) {
     new_microbe(speed = runif(1, 0, 1), location = generate_init_circle(c(0, 0), radius = init_bound_bg))
   })
 
-
   results <- overall_simulation(
     microbe_active = microbe_active, microbe_background = microbe_background,
-    total_iter = 50, sample_interval = 5,
-    sd = 1, radius = 2, arc = pi / 6, ec = 2,
-    resource = resource,
-    st_birth = 1, birth_rate = 0.5, st_death = 1, death_rate = 0.1, capacity = 500
+    total_iter = total_iter, sample_interval = sample_interval,
+    sd = sd, radius = radius, arc = arc, ec = ec,
+    resource = resource, capacity = capacity,
+    st_birth = 1, birth_rate = birth_rate, st_death = 1, death_rate = death_rate
   )
 
   return(results)
 }
 
-results <- overall_search(total_iter = 50, sample_interval = 5, sd = 1, radius = 2, arc = pi / 6, ec = 1, capacity = 1000)
+
+results_grid_search <- list()
+total_iter <- 30
+sample_interval <- 5
+radius <- 2
+arc <- pi / 6
+capacity <- 500
+resource <- c(5, 5)
+sd_values <- c(0.5, 1, 2)
+ec_values <- c(0.75, 1, 1.5)
+
+# Extreme values
+sd_values <- 1
+ec_values <- c(0.2, 1, 10)
 
 
-png("FigureXX_combined.png", width = 5000, height = 5000, res = 300)
-par(mfrow = c(3, 3), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
-par(mfrow = c(4, 4), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+param_grid <- expand.grid(sd = sd_values, ec = ec_values)
+param_grid$name <- sprintf("sd=%.1f_ec=%.1f", param_grid$sd, param_grid$ec)
 
-fig_each <- ceiling(sqrt(length(results[["microbe_results"]])))
-par(mfrow = c(fig_each, fig_each), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
-for (name in names(results[["microbe_results"]])) {
-  res <- results[["microbe_results"]][[name]]
-  plot_loc_resource(res, name, resource = resource)
+ncore <- min(nrow(param_grid), ncpus)
+results_list <- mclapply(seq_len(nrow(param_grid)), function(i) {
+# results_list2 <- mclapply(7:9, function(i) {
+  sd <- param_grid$sd[i]
+  ec <- param_grid$ec[i]
+  param_comb <- param_grid$name[i]
+  results <- grid_search(
+    total_iter = total_iter, sample_interval = sample_interval,
+    sd = sd, radius = radius, arc = arc, ec = ec,
+    capacity = capacity, resource = resource
+  )
+  list(param_comb = param_comb, results = results)
+}, mc.cores = ncore)
+
+results_grid_search <- setNames(
+  lapply(results_list, function(x) x$results),
+  sapply(results_list, function(x) x$param_comb)
+)
+
+saveRDS(results_grid_search, "results_grid_search.rds")
+# saveRDS(results_grid_search, "results_grid_search_extreme_ec.rds")
+
+
+theta <- seq(0, 2 * pi, length.out = 720)
+circle_radius <- 15
+cir_outer_x <- circle_radius * cos(theta)
+cir_outer_y <- circle_radius * sin(theta)
+
+# results_grid_search <- readRDS("results_grid_search.rds")
+png("Figure8_combined_parameters.png", width = 5000, height = 9000, res = 300)
+par(mfrow = c(9, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+for (param in names(results_grid_search)) {
+  res_each <- results_grid_search[[param]]$microbe_results
+  for (iteration in names(res_each)) {
+    res <- res_each[[iteration]]
+    iter <- as.numeric(gsub("Age = ([0-9]+)", "\\1", iteration))
+    main <- bquote(sigma == .(gsub("sd=([0-9.]+)_ec=.+", "\\1", param)) ~~~
+             gamma == ~ .(gsub("sd=.+_ec=([0-9.]+)", "\\1", param)) ~~~
+             "Iteration =" ~ .(iter))
+    if (iter %in% c(0, 5, 10, 20, 30)) {
+      plot_loc_resource(res, main, resource = resource)
+      polygon(cir_outer_x, cir_outer_y, border = "black")
+    }
+  }
 }
 dev.off()
+
+
+# results_grid_search <- readRDS("results_grid_search_extreme_ec.rds")
+png("FigureS3_combined_extreme_ec.png", width = 5000, height = 4000, res = 300)
+length(names(results_grid_search))
+par(mfrow = c(4, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+for (param in names(results_grid_search)) {
+  res_each <- results_grid_search[[param]]$microbe_results
+  for (iteration in names(res_each)) {
+    res <- res_each[[iteration]]
+    iter <- as.numeric(gsub("Age = ([0-9]+)", "\\1", iteration))
+    main <- bquote(
+      # sigma == .(gsub("sd=([0-9.]+)_ec=.+", "\\1", param)) ~~~
+          gamma == ~ .(gsub("sd=.+_ec=([0-9.]+)", "\\1", param)) ~~~
+          "Iteration =" ~ .(iter))
+    if (iter %in% c(0, 5, 10, 20, 30)) {
+      plot_loc_resource(res, main, resource = resource)
+      polygon(cir_outer_x, cir_outer_y, border = "black")
+    }
+  }
+}
+dev.off()
+
 
 
 
