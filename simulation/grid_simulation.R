@@ -2,7 +2,7 @@ library(devtools)
 library(parallel)
 load_all("simmicrobes")
 source("simulation/simulation_init.R")
-source("simulation/update_microbe.R")
+sys.source("simulation/update_microbe.R", envir = .GlobalEnv)
 
 ncpus <- min(12, floor(detectCores() * 0.8))
 options(mc.cores = ncpus)
@@ -126,10 +126,8 @@ saveRDS(results_grid_search, "results_grid_search.rds")
 # saveRDS(results_grid_search, "results_grid_search_extreme_ec.rds")
 
 
-theta <- seq(0, 2 * pi, length.out = 720)
 circle_radius <- 15
-cir_outer_x <- circle_radius * cos(theta)
-cir_outer_y <- circle_radius * sin(theta)
+cir_outer <- generate_circle_points(c(0, 0), circle_radius, n_points = 720)
 
 # results_grid_search <- readRDS("results_grid_search.rds")
 png("Figure8_combined_parameters.png", width = 5000, height = 9000, res = 300)
@@ -144,7 +142,7 @@ for (param in names(results_grid_search)) {
              "Iteration =" ~ .(iter))
     if (iter %in% c(0, 5, 10, 20, 30)) {
       plot_loc_resource(res, main, resource = resource)
-      polygon(cir_outer_x, cir_outer_y, border = "black")
+      polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
     }
   }
 }
@@ -152,9 +150,9 @@ dev.off()
 
 
 # results_grid_search <- readRDS("results_grid_search_extreme_ec.rds")
-png("FigureS3_combined_extreme_ec.png", width = 5000, height = 4000, res = 300)
+png("FigureS3_combined_extreme_ec.png", width = 5000, height = 3000, res = 300)
 length(names(results_grid_search))
-par(mfrow = c(4, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+par(mfrow = c(3, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
 for (param in names(results_grid_search)) {
   res_each <- results_grid_search[[param]]$microbe_results
   for (iteration in names(res_each)) {
@@ -166,7 +164,7 @@ for (param in names(results_grid_search)) {
           "Iteration =" ~ .(iter))
     if (iter %in% c(0, 5, 10, 20, 30)) {
       plot_loc_resource(res, main, resource = resource)
-      polygon(cir_outer_x, cir_outer_y, border = "black")
+      polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
     }
   }
 }
@@ -175,43 +173,43 @@ dev.off()
 
 
 
-simulation_real_data <- function() {
-  sd <- 1
-  birth_rate <- 0.5
-  death_rate <- 0.1
-  capacity <- 1000
-  resource <- c(15, 0)
+# simulation_real_data <- function() {
+#   sd <- 1
+#   birth_rate <- 0.5
+#   death_rate <- 0.1
+#   capacity <- 1000
+#   resource <- c(15, 0)
 
-  background_list <- lapply(1:100, function(x) {
-    background_microbe(
-      speed = runif(1, 0, 1),
-      location = generate_init_circle(c(2, 0), radius = 1)
-    )
-  })
+#   background_list <- lapply(1:100, function(x) {
+#     background_microbe(
+#       speed = runif(1, 0, 1),
+#       location = generate_init_circle(c(2, 0), radius = 1)
+#     )
+#   })
 
-  general_list <- lapply(1:100, function(x) {
-    new_microbe(
-      speed = runif(1, 0, 1),
-      location = generate_init_circle(c(-2, 0), radius = 1)
-    )
-  })
+#   general_list <- lapply(1:100, function(x) {
+#     new_microbe(
+#       speed = runif(1, 0, 1),
+#       location = generate_init_circle(c(-2, 0), radius = 1)
+#     )
+#   })
 
 
-  interval <- 3
-  total_time <- 100
+#   interval <- 3
+#   total_time <- 100
 
-  par(mfrow = c(3, 3))
-  microbe_list <- c(background_list, general_list)
-  plot_loc_resource(microbe_list, "Age = 0", resource = resource)
-  for (i in seq(interval, total_time, by = interval)) {
-    microbe_list <- overall_simulation(microbe_list, interval,
-      sd = sd,
-      radius = 3, arc = pi / 6, ec = 2, resource = resource,
-      birth_rate = birth_rate, death_rate = death_rate, capacity = capacity
-    )
-    plot_loc_resource(microbe_list, paste("Age =", i), resource = resource)
-    abline(v = 0, col = 2)
-  }
+#   par(mfrow = c(3, 3))
+#   microbe_list <- c(background_list, general_list)
+#   plot_loc_resource(microbe_list, "Age = 0", resource = resource)
+#   for (i in seq(interval, total_time, by = interval)) {
+#     microbe_list <- overall_simulation(microbe_list, interval,
+#       sd = sd,
+#       radius = 3, arc = pi / 6, ec = 2, resource = resource,
+#       birth_rate = birth_rate, death_rate = death_rate, capacity = capacity
+#     )
+#     plot_loc_resource(microbe_list, paste("Age =", i), resource = resource)
+#     abline(v = 0, col = 2)
+#   }
 
-  par(mfrow = c(1, 1))
-}
+#   par(mfrow = c(1, 1))
+# }

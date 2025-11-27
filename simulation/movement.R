@@ -36,6 +36,11 @@ movement_diff_attraction <- function(n, total_iter = 100, sd_list = c(0.1, 0.5, 
   return(results)
 }
 
+
+
+
+
+
 sd_list <- c(0.001, 0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 3)
 sd_list <- c(0.1, 0.5, 1, 1.5, 2, 3, 5, 10)
 system.time({
@@ -77,7 +82,7 @@ movement_by_generation <- function(n, total_iter = 100, boundary = 10, sd = 2, r
 
 
 system.time({
-  results <- movement_by_generation(n = 1000, total_iter = 100, sd = 2, plot_interval = 10)
+  results <- movement_by_generation(n = 1000, total_iter = 100, sd = 2, sample_interval = 10)
 })
 # saveRDS(results, "results_movement_attraction_generations.rds")
 # results <- readRDS("results_movement_attraction_generations.rds")

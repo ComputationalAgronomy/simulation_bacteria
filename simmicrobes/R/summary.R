@@ -120,13 +120,13 @@ plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary =
 
   cpal <- RColorBrewer::brewer.pal(8, "Dark2")
   bound_lim <- c(-boundary, boundary)
-  lim_max <- max(abs(loc_x), abs(loc_y))
+  lim_max <- max(abs(loc_x), abs(loc_y), abs(resource))
   # xlim <- range(loc_x)
   # ylim <- range(loc_y)
   bound_lim <- c(-lim_max, lim_max)
   # ylim <- c(-lim_max, lim_max)
 
-  plot(loc_x, loc_y,
+  eqscplot(loc_x, loc_y,
     xlim = bound_lim, ylim = bound_lim,
     col = c(rep(cpal[1], length(general)), rep(cpal[2], length(active))),
     pch = 20, main = main, cex = 0.5,
@@ -138,6 +138,47 @@ plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary =
 
 }
 
+
+
+
+#' @export
+plot_real_resource <- function(all_microbes, main, resource = c(3, 0), plate_size = 6) {
+  # active <- list()
+  # general <- list()
+  # for (m in all_microbes) {
+  #   if ("background" %in% class(m)) {
+  #     active <- c(active, list(m))
+  #   } else {
+  #     general <- c(general, list(m))
+  #   }
+  # }
+  # all_microbes <- c(general, active)
+  loc_x <- sapply(all_microbes, function(m) m$location[1])
+  loc_y <- sapply(all_microbes, function(m) m$location[2])
+
+  cpal <- RColorBrewer::brewer.pal(8, "Dark2")
+  # bound_lim <- c(-boundary, boundary)
+  # lim_max <- max(abs(loc_x), abs(loc_y), abs(resource))
+  # # xlim <- range(loc_x)
+  # ylim <- range(loc_y)
+  bound_lim <- c(-plate_size, plate_size)
+  # ylim <- c(-lim_max, lim_max)
+
+  eqscplot(loc_x, loc_y,
+    xlim = bound_lim, ylim = bound_lim,
+    col = cpal[2],
+    pch = 20, main = main, cex = 0.5,
+    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
+  )
+  points(c(resource[1], -resource[1]), rep(resource[2], 2), col = c("red", "blue"), pch = 19, cex = 1.5)
+  points(0, 0, col = "green", pch = 19, cex = 1.5)
+  cir_outer <- generate_circle_points(c(0, 0), plate_size, n_points = 720)
+  polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
+
+  legend("topleft", legend = c("Active Microbes", "Resources: PDA", "Water"),
+  col = c(cpal[2], "red", "blue"), pch = 19, cex = 0.8, bty = "n")
+
+}
 
 
 microbe_generate <- function(n, t, st_birth, birth_rate, st_death, death_rate, capacity) {

@@ -1,18 +1,5 @@
 library(parallel)
 
-#' @export
-convert_polar_to_cartesian <- function(radius, angle) {
-  x <- radius * cos(angle)
-  y <- radius * sin(angle)
-  return(c(x, y))
-}
-
-#' @export
-convert_cartesian_to_polar <- function(x, y) {
-  radius <- sqrt(x^2 + y^2)
-  angle <- atan2(y, x)
-  return(c(radius, angle))
-}
 
 
 

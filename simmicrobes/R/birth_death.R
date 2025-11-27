@@ -26,7 +26,7 @@ death <- function(m, st_death, death_rate, population, capacity) {
 }
 
 #' @export
-birth.general <- function(m, st_birth, birth_rate, population, capacity) {
+birth.general <- function(m, st_birth, birth_rate, population, capacity, move_dist = 0.1) {
   if (m$age < st_birth) {
     n <- NA
   } else {
@@ -35,7 +35,7 @@ birth.general <- function(m, st_birth, birth_rate, population, capacity) {
     if (rate > p) {
       n <- new_microbe(
         speed = runif(1, 0, 1),
-        location = c(m$location[1] + runif(1, -0.1, 0.1), m$location[2] + runif(1, -0.1, 0.1)), parent = m$id
+        location = c(m$location[1] + runif(1, -move_dist, move_dist), m$location[2] + runif(1, -move_dist, move_dist)), parent = m$id
       )
     } else {
       n <- NA
@@ -45,7 +45,7 @@ birth.general <- function(m, st_birth, birth_rate, population, capacity) {
 }
 
 #' @export
-birth.background <- function(m, st_birth, birth_rate, population, capacity) {
+birth.background <- function(m, st_birth, birth_rate, population, capacity, move_dist = 0.1) {
   if (m$age < st_birth) {
     n <- NA
   } else {
@@ -54,7 +54,7 @@ birth.background <- function(m, st_birth, birth_rate, population, capacity) {
     if (rate > p) {
       n <- background_microbe(
         speed = runif(1, 0, 1),
-        location = c(m$location[1] + runif(1, -0.1, 0.1), m$location[2] + runif(1, -0.1, 0.1)), parent = m$id
+        location = c(m$location[1] + runif(1, -move_dist, move_dist), m$location[2] + runif(1, -move_dist, move_dist)), parent = m$id
       )
     } else {
       n <- NA
@@ -65,6 +65,6 @@ birth.background <- function(m, st_birth, birth_rate, population, capacity) {
 
 
 #' @export
-birth <- function(m, st_birth, birth_rate, population, capacity) {
+birth <- function(m, st_birth, birth_rate, population, capacity, move_dist = 0.1) {
   UseMethod("birth")
 }
