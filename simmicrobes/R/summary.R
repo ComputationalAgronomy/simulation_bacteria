@@ -46,7 +46,7 @@ plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab =
     xaxt = xaxt, yaxt = yaxt, bty = "n", ...
   )
   points(resources[1], resources[2], col = "red", pch = 19, cex = 2)
-  legend("topleft", legend = c("Active Microbes", "Resource"), col = c(cpal[1], "red"), pch = 19, cex = 0.8, bty = "n")
+  legend("topleft", legend = c("Active Microbes", "Resource"), col = c(cpal[1], "red"), pch = 19, cex = 1.5, bty = "n")
 }
 
 
@@ -71,8 +71,11 @@ plot_population <- function(time, population, pop_capacity, res_name) {
 #' @importFrom graphics legend points plot
 #' @importFrom MASS eqscplot
 #' @export
-plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab = "", ylab = "", cex = 0.5, pch = 19, xaxt = "n", yaxt = "n", ...) {
-
+plot_loc_two_microbes <- function(
+    microbe_active, microbe_background,
+    main, xlab = "", ylab = "",
+    cex = 0.5, pch = 19, xaxt = "n", yaxt = "n",
+    cex.legend = 1.5, ...) {
   loc_x <- c(
     sapply(microbe_background, function(m) m$location[1]),
     sapply(microbe_active, function(m) m$location[1])
@@ -92,13 +95,15 @@ plot_loc_two_microbes <- function(microbe_active, microbe_background, main, xlab
 
   cpal <- RColorBrewer::brewer.pal(8, "Dark2")
   col <- c(rep(cpal[1], length(microbe_background)), rep(cpal[2], length(microbe_active)))
-  eqscplot(loc_x, loc_y, col = col, main = main,
-  xlim = bound_lim, ylim = bound_lim, xlab = xlab, ylab = ylab,
-  cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt,
-  bty="n",
-  ...)
+  eqscplot(loc_x, loc_y,
+    col = col, main = main,
+    xlim = bound_lim, ylim = bound_lim, xlab = xlab, ylab = ylab,
+    cex = cex, pch = pch, xaxt = xaxt, yaxt = yaxt,
+    bty = "n",
+    ...
+  )
   # eqscplot
-  legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], "black"), pch = 19, cex = 0.8, bty = "n")
+  legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], cpal[1]), pch = 19, cex = cex.legend, bty = "n")
 }
 
 
@@ -133,9 +138,10 @@ plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary =
     xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
   )
   points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
-  legend("topleft", legend = c("Background Microbes", "Active Microbes", "Resources"),
-  col = c(cpal[1:2], "red"), pch = 19, cex = 0.8, bty = "n")
-
+  legend("topleft",
+    legend = c("Background Microbes", "Active Microbes", "Resources"),
+    col = c(cpal[1:2], "red"), pch = 19, cex = 0.8, bty = "n"
+  )
 }
 
 
@@ -175,9 +181,10 @@ plot_real_resource <- function(all_microbes, main, resource = c(3, 0), plate_siz
   cir_outer <- generate_circle_points(c(0, 0), plate_size, n_points = 720)
   polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
 
-  legend("topleft", legend = c("Active Microbes", "Resources: PDA", "Water"),
-  col = c(cpal[2], "red", "blue"), pch = 19, cex = 0.8, bty = "n")
-
+  legend("topleft",
+    legend = c("Active Microbes", "Resources: PDA", "Water"),
+    col = c(cpal[2], "red", "blue"), pch = 19, cex = 0.8, bty = "n"
+  )
 }
 
 

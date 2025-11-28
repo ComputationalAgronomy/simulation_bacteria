@@ -54,7 +54,7 @@ png("Figure6_movement_attraction.png", width = 4000, height = 4000, res = 300)
 fig_each <- ceiling(sqrt(length(results)))
 par(mfrow = c(fig_each, fig_each), mar = c(3, 3, 2, 1), mgp = c(2.5, 0, 0))
 for (title in names(results)) {
-  plot_loc(results[[title]], title)
+  plot_loc(results[[title]], title, cex.main = 2)
   points(0, 0, col = "black", pch = 19, cex = 2)
 }
 
@@ -148,13 +148,13 @@ system.time({
   }
 })
 
-lines <- setNames(seq(0, by = -24.5, length = length(repulsion_list)), names(results_all))
 
 # saveRDS(results_all, "results_movement_density.rds")
 # results_all <- readRDS("results_movement_density.rds")
 
 png("Figure7_movement_density.png", width = 5000, height = 7000, res = 300)
 
+lines <- setNames(seq(0, by = -24.5, length = length(repulsion_list)), names(results_all))
 par(mfrow = c(7, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 5, 0))
 for (param in names(results_all)) {
   for (title in names(results_all[[param]])) {
@@ -163,6 +163,24 @@ for (param in names(results_all)) {
     # eqscplot
   }
   title(param, outer = TRUE, line = lines[[param]], cex.main = 2)
+}
+
+dev.off()
+
+
+png("Figure7_movement_density_reduced.png", width = 4000, height = 4000, res = 300)
+
+selected_param <- names(results_all)[c(2, 4, 6)]
+lines <- setNames(seq(1, by = -32, length = length(selected_param)), selected_param)
+par(mfrow = c(3, 3), mar = c(5, 1, 2, 1), oma = c(0, 0, 5, 0))
+for (param in selected_param) {
+  sub_titles <- names(results_all[[param]])[c(1, 2, 5)]
+  for (title in sub_titles) {
+    main <- gsub(". Repulsion = .+", "", title)
+    plot_loc_two_microbes(results_all[[param]][[title]]$active, results_all[[param]][[title]]$fixed, main, cex.main=2.25, cex.legend=2)
+    # eqscplot
+  }
+  title(gsub("_", "=", param), outer = TRUE, line = lines[[param]], cex.main = 2.5)
 }
 
 dev.off()
