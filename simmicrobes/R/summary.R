@@ -103,13 +103,15 @@ plot_loc_two_microbes <- function(
     ...
   )
   # eqscplot
-  legend("topright", legend = c("Active", "Stationary"), col = c(cpal[2], cpal[1]), pch = 19, cex = cex.legend, bty = "n")
+  legend("topleft", legend = c("Active", "Stationary"), col = c(cpal[2], cpal[1]), pch = 19, cex = cex.legend, bty = "n")
 }
 
 
 
 #' @export
-plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary = 15) {
+plot_loc_resource <- function(all_microbes, main,
+  resource = c(5, 5), boundary = 15,
+  cex.legend = 1.5, ...) {
   active <- list()
   general <- list()
   for (m in all_microbes) {
@@ -135,12 +137,13 @@ plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary =
     xlim = bound_lim, ylim = bound_lim,
     col = c(rep(cpal[1], length(general)), rep(cpal[2], length(active))),
     pch = 20, main = main, cex = 0.5,
-    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
+    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = "",
+    ...
   )
   points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
   legend("topleft",
     legend = c("Background Microbes", "Active Microbes", "Resources"),
-    col = c(cpal[1:2], "red"), pch = 19, cex = 0.8, bty = "n"
+    col = c(cpal[1:2], "red"), pch = 19, cex = cex.legend, bty = "n"
   )
 }
 
@@ -148,7 +151,9 @@ plot_loc_resource <- function(all_microbes, main, resource = c(5, 5), boundary =
 
 
 #' @export
-plot_real_resource <- function(all_microbes, main, resource = c(3, 0), plate_size = 6) {
+plot_real_resource <- function(all_microbes, main,
+  resource = c(3, 0), plate_size = 6,
+  cex.legend = 1.5, ...) {
   # active <- list()
   # general <- list()
   # for (m in all_microbes) {
@@ -174,7 +179,8 @@ plot_real_resource <- function(all_microbes, main, resource = c(3, 0), plate_siz
     xlim = bound_lim, ylim = bound_lim,
     col = cpal[2],
     pch = 20, main = main, cex = 0.5,
-    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = ""
+    xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = "",
+    ...
   )
   points(c(resource[1], -resource[1]), rep(resource[2], 2), col = c("red", "blue"), pch = 19, cex = 1.5)
   points(0, 0, col = "green", pch = 19, cex = 1.5)
@@ -183,7 +189,7 @@ plot_real_resource <- function(all_microbes, main, resource = c(3, 0), plate_siz
 
   legend("topleft",
     legend = c("Active Microbes", "Resources: PDA", "Water"),
-    col = c(cpal[2], "red", "blue"), pch = 19, cex = 0.8, bty = "n"
+    col = c(cpal[2], "red", "blue"), pch = 19, cex = cex.legend, bty = "n"
   )
 }
 

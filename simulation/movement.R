@@ -152,20 +152,23 @@ system.time({
 # saveRDS(results_all, "results_movement_density.rds")
 # results_all <- readRDS("results_movement_density.rds")
 
-png("Figure7_movement_density.png", width = 5000, height = 7000, res = 300)
+png("FigureS5_movement_density_full.png", width = 8000, height = 11000, res = 300)
 
-lines <- setNames(seq(0, by = -24.5, length = length(repulsion_list)), names(results_all))
-par(mfrow = c(7, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 5, 0))
+lines <- setNames(seq(0, by = -25, length = length(repulsion_list)), names(results_all))
+par(mfrow = c(7, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 6, 0), cex = 1)
 for (param in names(results_all)) {
   for (title in names(results_all[[param]])) {
     main <- gsub(". Repulsion = .+", "", title)
-    plot_loc_two_microbes(results_all[[param]][[title]]$active, results_all[[param]][[title]]$fixed, main)
+    plot_loc_two_microbes(results_all[[param]][[title]]$active, results_all[[param]][[title]]$fixed,
+    main, cex.main = 2, cex.legend = 2
+    )
     # eqscplot
   }
-  title(param, outer = TRUE, line = lines[[param]], cex.main = 2)
+  title(param, outer = TRUE, line = lines[[param]], cex.main = 2.5)
 }
 
 dev.off()
+
 
 
 png("Figure7_movement_density_reduced.png", width = 4000, height = 4000, res = 300)
@@ -177,11 +180,14 @@ for (param in selected_param) {
   sub_titles <- names(results_all[[param]])[c(1, 2, 5)]
   for (title in sub_titles) {
     main <- gsub(". Repulsion = .+", "", title)
-    plot_loc_two_microbes(results_all[[param]][[title]]$active, results_all[[param]][[title]]$fixed, main, cex.main=2.25, cex.legend=2)
+    plot_loc_two_microbes(results_all[[param]][[title]]$active,
+      results_all[[param]][[title]]$fixed,
+      main,
+      cex.main = 2.25, cex.legend = 2
+    )
     # eqscplot
   }
   title(gsub("_", "=", param), outer = TRUE, line = lines[[param]], cex.main = 2.5)
 }
 
 dev.off()
-
