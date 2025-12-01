@@ -34,8 +34,14 @@ loc_time_print.microbe <- function(m, id, time) {
 
 ## Get the location of all the microbes.
 #' @export
-plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab = "", ylab = "", cex = 0.5, pch = 19,
-                     xaxt = "n", yaxt = "n", resources = c(5, 5), ...) {
+plot_loc <- function(microbes, title,
+ xlim = c(-5, 10), ylim = c(-5, 10),
+ resources = c(5, 5),
+xlab = "", ylab = "",
+                     xaxt = "n", yaxt = "n",
+
+                     cex = 0.5, pch = 19,
+                     cex.legend = 1.5, ...) {
   loc_x <- sapply(microbes, function(m) m$location[1])
   loc_y <- sapply(microbes, function(m) m$location[2])
   # locations <- cbind(loc_x, loc_y)
@@ -46,7 +52,7 @@ plot_loc <- function(microbes, title, xlim = c(-5, 10), ylim = c(-5, 10), xlab =
     xaxt = xaxt, yaxt = yaxt, bty = "n", ...
   )
   points(resources[1], resources[2], col = "red", pch = 19, cex = 2)
-  legend("topleft", legend = c("Active Microbes", "Resource"), col = c(cpal[1], "red"), pch = 19, cex = 1.5, bty = "n")
+  legend("topleft", legend = c("Active Microbes", "Resource"), col = c(cpal[1], "red"), pch = 19, cex = cex.legend, bty = "n")
 }
 
 
@@ -109,9 +115,10 @@ plot_loc_two_microbes <- function(
 
 
 #' @export
-plot_loc_resource <- function(all_microbes, main,
-  resource = c(5, 5), boundary = 15,
-  cex.legend = 1.5, ...) {
+plot_loc_resource <- function(
+    all_microbes, main,
+    resource = c(5, 5), boundary = 15,
+    cex.main = 2, cex.legend = 1.5, ...) {
   active <- list()
   general <- list()
   for (m in all_microbes) {
@@ -138,7 +145,7 @@ plot_loc_resource <- function(all_microbes, main,
     col = c(rep(cpal[1], length(general)), rep(cpal[2], length(active))),
     pch = 20, main = main, cex = 0.5,
     xaxt = "n", yaxt = "n", axes = FALSE, xlab = "", ylab = "",
-    ...
+    cex.main = cex.main, ...
   )
   points(resource[1], resource[2], col = "red", pch = 19, cex = 1.5)
   legend("topleft",
@@ -151,9 +158,10 @@ plot_loc_resource <- function(all_microbes, main,
 
 
 #' @export
-plot_real_resource <- function(all_microbes, main,
-  resource = c(3, 0), plate_size = 6,
-  cex.legend = 1.5, ...) {
+plot_real_resource <- function(
+    all_microbes, main,
+    resource = c(3, 0), plate_size = 6,
+    cex.legend = 1.5, ...) {
   # active <- list()
   # general <- list()
   # for (m in all_microbes) {

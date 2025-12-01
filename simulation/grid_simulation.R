@@ -58,7 +58,6 @@ grid_search <- function(
     total_iter, sample_interval,
     sd = 1, radius = 2, arc = pi / 6, ec = 2,
     capacity = 1000, resource = c(5, 5)) {
-
   init_bound_active <- 1
   init_bound_bg <- 15
 
@@ -105,7 +104,7 @@ param_grid$name <- sprintf("sd=%.1f_ec=%.1f", param_grid$sd, param_grid$ec)
 
 ncore <- min(nrow(param_grid), ncpus)
 results_list <- mclapply(seq_len(nrow(param_grid)), function(i) {
-# results_list2 <- mclapply(7:9, function(i) {
+  # results_list2 <- mclapply(7:9, function(i) {
   sd <- param_grid$sd[i]
   ec <- param_grid$ec[i]
   param_comb <- param_grid$name[i]
@@ -122,31 +121,91 @@ results_grid_search <- setNames(
   sapply(results_list, function(x) x$param_comb)
 )
 
-saveRDS(results_grid_search, "results_grid_search.rds")
+# saveRDS(results_grid_search, "results_grid_search.rds")
 # saveRDS(results_grid_search, "results_grid_search_extreme_ec.rds")
+
+
+
+parse_main_f8 <- function(param, iteration) {
+  sd_value <- gsub("sd=([0-9.]+)_ec.+", "\\1", param)
+  ec_value <- gsub("sd=.+_ec=([0-9.]+)", "\\1", param)
+  iter <- as.numeric(gsub("Age = ([0-9]+)", "\\1", iteration))
+  main <- sprintf("Iteration = %d", iter)
+  outer_main <- bquote(
+    sigma == .(sd_value) ~ ~ ~
+    gamma == ~ .(ec_value)
+    # "Iteration =" ~ .(iter)
+  )
+  outer_main <- sprintf("Attraction = %s   Repulsion = %s", sd_value, ec_value)
+  return(list(iter = iter, main = main, outer_main = outer_main))
+}
 
 
 circle_radius <- 15
 cir_outer <- generate_circle_points(c(0, 0), circle_radius, n_points = 720)
+resource <- c(5, 5)
+
 
 # results_grid_search <- readRDS("results_grid_search.rds")
-png("Figure8_combined_parameters.png", width = 5000, height = 9000, res = 300)
-par(mfrow = c(9, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
-for (param in names(results_grid_search)) {
+png("FigureS6_combined_parameters_full.png", width = 8000, height = 14000, res = 300)
+
+selected_param <- names(results_grid_search)
+# lines <- setNames(seq(1, by = -38.5, length = length(selected_param)), selected_param)
+
+# par(mfrow = c(9, 5), mar = c(4, 4, 2, 1), mgp = c(2.5, 1, 0))
+par(mfrow = c(9, 5), mar = c(1, 1, 9, 1), oma = c(0, 0, 0, 0))
+
+for (param in selected_param) {
   res_each <- results_grid_search[[param]]$microbe_results
   for (iteration in names(res_each)) {
     res <- res_each[[iteration]]
-    iter <- as.numeric(gsub("Age = ([0-9]+)", "\\1", iteration))
-    main <- bquote(sigma == .(gsub("sd=([0-9.]+)_ec=.+", "\\1", param)) ~~~
-             gamma == ~ .(gsub("sd=.+_ec=([0-9.]+)", "\\1", param)) ~~~
-             "Iteration =" ~ .(iter))
-    if (iter %in% c(0, 5, 10, 20, 30)) {
-      plot_loc_resource(res, main, resource = resource)
+    plot_info <- parse_main_f8(param, iteration)
+    if (plot_info[["iter"]] %in% c(0, 5, 10, 20, 30)) {
+      plot_loc_resource(res, plot_info[["main"]], resource = resource,
+        cex.main = 2.5, cex.legend = 2
+      )
       polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
+      if (plot_info[["iter"]] == 10) {
+        title(plot_info[["outer_main"]], outer = FALSE, line = 6, cex.main = 3)
+      }
     }
+
   }
 }
 dev.off()
+
+
+
+
+
+
+png("Figure8_combined_parameters_reduce.png", width = 4000, height = 5500, res = 300)
+
+selected_param <- names(results_grid_search)[c(1, 3, 7, 9)]
+par(mfrow = c(4, 3), mar = c(1, 1, 9, 1), oma = c(0, 0, 0, 0))
+
+for (param in selected_param) {
+  res_each <- results_grid_search[[param]]$microbe_results
+  for (iteration in names(res_each)) {
+    res <- res_each[[iteration]]
+    plot_info <- parse_main_f8(param, iteration)
+    if (plot_info[["iter"]] %in% c(0, 10, 30)) {
+      plot_loc_resource(res, plot_info[["main"]], resource = resource,
+        cex.main = 2, cex.legend = 1.4
+      )
+      polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")
+      if (plot_info[["iter"]] == 10) {
+        title(plot_info[["outer_main"]], outer = FALSE, line = 6, cex.main = 2.5)
+      }
+    }
+
+  }
+}
+dev.off()
+
+
+
+
 
 
 # results_grid_search <- readRDS("results_grid_search_extreme_ec.rds")
@@ -160,8 +219,9 @@ for (param in names(results_grid_search)) {
     iter <- as.numeric(gsub("Age = ([0-9]+)", "\\1", iteration))
     main <- bquote(
       # sigma == .(gsub("sd=([0-9.]+)_ec=.+", "\\1", param)) ~~~
-          gamma == ~ .(gsub("sd=.+_ec=([0-9.]+)", "\\1", param)) ~~~
-          "Iteration =" ~ .(iter))
+      gamma == ~ .(gsub("sd=.+_ec=([0-9.]+)", "\\1", param)) ~ ~ ~
+        "Iteration =" ~ .(iter)
+    )
     if (iter %in% c(0, 5, 10, 20, 30)) {
       plot_loc_resource(res, main, resource = resource)
       polygon(cir_outer[["x"]], cir_outer[["y"]], border = "black")

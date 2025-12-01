@@ -52,10 +52,10 @@ system.time({
 png("Figure6_movement_attraction.png", width = 4000, height = 4000, res = 300)
 
 fig_each <- ceiling(sqrt(length(results)))
-par(mfrow = c(fig_each, fig_each), mar = c(3, 3, 2, 1), mgp = c(2.5, 0, 0))
+par(mfrow = c(fig_each, fig_each), mar = c(3, 3, 2, 1))
 for (title in names(results)) {
-  plot_loc(results[[title]], title, cex.main = 2)
-  points(0, 0, col = "black", pch = 19, cex = 2)
+  plot_loc(results[[title]], title, cex.main = 2.2, cex.legend = 2)
+  points(0, 0, col = "black", pch = 19, cex = 2.5)
 }
 
 dev.off()
@@ -87,13 +87,13 @@ system.time({
 # saveRDS(results, "results_movement_attraction_generations.rds")
 # results <- readRDS("results_movement_attraction_generations.rds")
 
-png("FigureS2_movement_attraction_generations.png", width = 6000, height = 4500, res = 300)
+png("Supplemental_FigureS2_movement_attraction_generations.png", width = 4000, height = 3000, res = 300)
 
 fig_each <- ceiling(sqrt(length(results)))
-par(mfrow = c(fig_each, fig_each), mar = c(3, 3, 2, 1), mgp = c(2.5, 0, 0))
-par(mfrow = c(3, 4), mar = c(3, 3, 2, 1), mgp = c(2.5, 0, 0))
+par(mfrow = c(fig_each, fig_each), mar = c(3, 3, 2, 1))
+par(mfrow = c(3, 4), mar = c(3, 3, 2, 1))
 for (title in names(results)) {
-  plot_loc(results[[title]], title)
+  plot_loc(results[[title]], title, cex.main = 2, cex.legend = 1.5)
   points(0, 0, col = "green", pch = 19, cex = 2)
 }
 
@@ -152,7 +152,7 @@ system.time({
 # saveRDS(results_all, "results_movement_density.rds")
 # results_all <- readRDS("results_movement_density.rds")
 
-png("FigureS5_movement_density_full.png", width = 8000, height = 11000, res = 300)
+png("Supplemental_FigureS3_movement_density_full.png", width = 8000, height = 11000, res = 300)
 
 lines <- setNames(seq(0, by = -25, length = length(repulsion_list)), names(results_all))
 par(mfrow = c(7, 5), mar = c(5, 1, 2, 1), oma = c(0, 0, 6, 0), cex = 1)
