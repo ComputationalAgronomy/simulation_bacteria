@@ -1,5 +1,7 @@
 # simulation_bacteria
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17774654.svg)](https://doi.org/10.5281/zenodo.17774654)
+
 `simmicrobes` is a R package
 
 Most of the structure and setup are taking from https://r-pkgs.org/
